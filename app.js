@@ -7,7 +7,6 @@ const app = express();
 const server = http.createServer(app);
 const io = socket(server);
 const mysql = require('mysql');
-const { rawListeners } = require('process');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -17,6 +16,7 @@ const connection = mysql.createConnection({
     multipleStatements: true
 })
 
+app.use(express.static(__dirname + '/static'));
 app.use(bodyParser.json());
 app.use(express.urlencoded( {extended : false } ));
 app.set('view engine', 'ejs');
@@ -26,85 +26,10 @@ app.use(session({
     saveUninitialized: true 
 }))
 
-//초기 화면
-app.get('/', (req, res) => {
-
-    res.render('login');
-})
-
-//로그인 처리
-app.post('/login', (req, res) => {
-    
-    //입력 id, pw 추출
-    var id = req.body.id;
-    var pw = req.body.pw;
-
-    connection.query(`SELECT * FROM user WHERE id="${id}"`, (err, rows) => {
-        if(err) throw err;
-
-        //로그인 확인
-        if(rows[0].id == id && rows[0].pw == pw){
-            //login session 생성
-            req.session.uno = rows[0].no;
-            req.session.uid = rows[0].id;
-            req.session.save(() => {
-                res.redirect('rooms');
-            });
-        }else{
-            res.redirect('/');
-        }
-    })
-})
-
-//채팅방 목록
-app.get('/rooms', (req, res) => {
-
-    if(req.session.uno != null){
-        connection.query(`SELECT * FROM room`, (err, rows) => {
-            if(err) throw err;
-            
-            //존재하는 채팅방 추출
-            var list = new Array();
-            for(var i=0; i<rows.length; i++){
-                
-                list.push(rows[i].no);
-            }
-            var rooms = JSON.stringify(list);
-            res.render('rooms', {rooms: rooms});
-        })
-    }else{
-        res.redirect('/')
-    }
-})
-
-//채팅
-app.get('/chat/:no', (req, res) => {
-    //if(req.session.uno != null){
-        
-        var query = `SELECT * FROM chat WHERE rno = ${req.params.no} ORDER BY no`;
-        connection.query(query, (err, rows) => {
-            //해당 채팅방에 저장된 채팅 조회
-            var list = new Array();
-            for(var i=0; i<rows.length; i++){
-                var data = new Object();
-                data = rows[i];
-                list.push(data);
-            }
-            //유저 정보
-            var user = {
-                uno: req.session.uno,
-                uid: req.session.uid
-            }
-            res.render('chat', {
-                rno: req.params.no,
-                chat: JSON.stringify(list),
-                user: JSON.stringify(user)
-            });
-        })
-    //}else{
-    //    res.redirect('/');
-    //}
-})
+const userRouter = require('./router/userRouter');
+const mainRouter = require('./router/mainRouter');
+app.use('/user', userRouter);
+app.use('/', mainRouter);
 
 io.on('connection', (socket) => {
     console.log('connect');
