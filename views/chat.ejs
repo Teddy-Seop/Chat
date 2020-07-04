@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <textarea id="txt" cols="30" rows="10"></textarea><br>
+    <input type="text" id="message" />
+    <button onclick="send()">SEND</button>
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" 
+integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+crossorigin="anonymous"></script>
+<script>
+    window.onload = () => {
+        
+        //socket io 연결
+        
+
+        //db에 저장된 채팅 출력
+        var chat = `<%- chat %>`;
+        chat = JSON.parse(chat);
+        for(var i=0; i<chat.length; i++){
+            $('#txt').append(`${chat[i].uid} : ${chat[i].msg}`)
+        }
+    }
+</script>

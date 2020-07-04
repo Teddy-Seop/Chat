@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        #header{
+            border: 1px solid black;
+        }
+        #contents{
+            border: 1px solid black;
+        }
+        .rooms{
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+
+    </div>
+    <div id="contents">
+        
+    </div>
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" 
+integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+crossorigin="anonymous"></script>
+<script>
+    window.onload = () => {
+        //채팅방 목록 출력
+        var rooms = `<%= rooms %>`;
+        rooms = JSON.parse(rooms);
+        for(var i=0; i<rooms.length; i++){
+            var html = `<div class="rooms">참여인원 수 : 3   방 번호 : ${rooms[i]}`;
+            html += `<button onclick='join(${rooms[i]})'>입장</button>`
+            html += `</div>`;
+            
+            $('#contents').append(html);
+        }
+    }
+
+    //채팅방 입장
+    var join = (no) => {
+        location.href = `/chat/${no}`;
+    }
+</script>
