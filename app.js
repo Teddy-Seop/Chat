@@ -113,6 +113,9 @@ io.on('connection', (socket) => {
     socket.on('joinRoom', (data) => {
         console.log(data);
 
+        //방 입장
+        socket.join(data.rno);
+
         //채팅방 유저 목록 삽입 조회 쿼리
         var sql1 = `INSERT INTO room_userList (rno, uno, uid) VALUES (${data.rno}, ${data.uno}, "${data.uid}");`;
         var sql2 = `SELECT * FROM room_userList WHERE rno = ${data.rno};`;
@@ -120,8 +123,12 @@ io.on('connection', (socket) => {
            if(err) throw err;
            
            console.log(rows[1]);
+           //입장 메시지 전송
            var msg = `<div>${rows[1][rows[1].length - 1].uid}님이 입장하였습니다.</div>`;
-           io.emit('message', msg);
+           io.to(data.rno).emit('message', msg);
+
+           //유저 목록 전송
+           io.to(data.rno).emit('userList', rows[1]);
         })
     })
 
@@ -130,16 +137,22 @@ io.on('connection', (socket) => {
         console.log(data);
         data = JSON.parse(data);
         var msg = `<div>${data.uid} : ${data.msg}</div>`;
-        io.emit('message', msg);
+        io.to(data.rno).emit('message', msg);
     })
 
     //채팅방 나가기
     socket.on('leaveRoom', (data) => {
-
-        var sql = `DELETE FROM room_userList WHERE rno = ${data.rno}, uno = ${data.uno};`;
-        connection.query(sql, (err, rows) => {
+        console.log(data);
+        var sql1 = `DELETE FROM room_userList WHERE rno = ${data.rno} AND uno = ${data.uno};`;
+        var sql2 = `SELECT * FROM room_userList WHERE rno = ${data.rno};`;
+        connection.query(sql1 + sql2, (err, rows) => {
+            if(err) throw err;
+            //퇴장 메시지 전송
             var msg = `<div>${data.uid}님이 퇴장하였습니다.`
-            io.emit('message', msg);
+            io.to(data.rno).emit('message', msg);
+            
+            //유저 목록 전송
+           io.to(data.rno).emit('userList', rows[1]);
         })
     })
 

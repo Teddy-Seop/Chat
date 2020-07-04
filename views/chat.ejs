@@ -6,16 +6,32 @@
     <style>
         #txt{
             border: 1px solid black;
+            width: 50%;
             height: 300px;
             overflow: scroll;
+            float: left;
+        }
+        #userList{
+            float: right;
+        }
+        #chat{
+            float: left;
+            width: 100%;
+        }
+        #leave{
+            float: right;
         }
     </style>
 </head>
 <body>
+    <div>방번호 : <%- rno %></div>
     <div id="txt"></div>
     <div id="userList"></div>
-    <input type="text" id="message" />
-    <button onclick="send()">SEND</button>
+    <div id="chat">
+        <input type="text" id="message" />
+        <button onclick="send()">SEND</button>
+        <button id="leave" onclick="leave()">나가기</button>
+    </div>
 </body>
 </html>
 
@@ -52,7 +68,12 @@ crossorigin="anonymous"></script>
 
         //유저 리스트
         socket.on('userList', (data) => {
-            console.log(data);
+            console.log(data[3]);
+            document.querySelector('#userList').innerHTML = '';
+            $('#userList').append(`<div><h2>현재 인원 : ${data.length}</h2></div>`);
+            for(var i=0; i<data.length; i++){
+                $('#userList').append(`<div>${data[i].uid}</div>`);
+            }
         })
     }
 
@@ -62,6 +83,7 @@ crossorigin="anonymous"></script>
         //var user = `<%- user %>`;
         //user = JSON.parse(user);
         var data = {
+            rno: rno,
             uno: uno,
             uid: uid,
             msg: msg
@@ -85,5 +107,6 @@ crossorigin="anonymous"></script>
             uid: uid
         }
         socket.emit('leaveRoom', data);
+        location.href = '/rooms'
     }
 </script>
