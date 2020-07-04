@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        #header{
+            border: 1px solid black;
+        }
+        #contents{
+            border: 1px solid black;
+            float: left;
+            width: 100%;
+        }
+        .users{
+            border: 1px solid black;
+        }
+        .menu{
+            float: left;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid black;
+        }
+        #btn{
+            float:right;
+        }
+        #menu{
+            border-bottom: 1px solid black;
+        }
+        #receiveMenu, #listMenu{
+            float:left;
+            width:40%;
+            border: 1px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="roomMenu" class="menu" onclick="roomMenu()">
+            Rooms
+        </div>
+        <div id="userMenu" class="menu" onclick="userMenu()">
+            Users
+        </div>
+        <div id="friendsMenu" class="menu" onclick="friendsMenu()">
+            Friends
+        </div>
+        <div id="logout" class="menu" onclick="logout()">
+            logout
+        </div>
+    </div>
+    <div id="contents">
+        <div id="menu">
+            <div id="receiveMenu" onclick="receive()">수신함</div>
+            <div id="listMenu" onclick="list()">목록</div>
+        </div>
+        <div id="list"></div>
+    </div>
+</body>
+</html>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" 
+integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+crossorigin="anonymous"></script>
+<script>
+    window.onload = () => {
+        friendingList();
+    }
+
+    // 친구 신청한 유저 리스트 조회
+    var friendingList = () => {
+        var friending = `<%- friending %>`;
+        friending = JSON.parse(friending);
+
+        var data = new Array();
+        for(var i=0; i<friending.length; i++){
+            data.push(friending[i].uno)
+        }
+        $.ajax({
+            url: '/user/userList',
+            dataType: 'json',
+            type: 'GET',
+            data: {data : data},
+            success: (result) => {
+                console.log(result);
+                document.querySelector('#list').innerHTML = "";
+                for(var i=0; i<result.length; i++){
+                    var html = `<div class="user ${result[i].no}">ID: ${result[i].id}  가입날짜: ${result[i].signup_date}`;
+                    html += `<div id="btn"><button class="accept" onclick="accept(${result[i].no})">수락</button>`;
+                    html += `<button class="reject" onclick="reject(${result[i].no})">거절</button></div>`;
+                    html += `</div>`;
+                    $('#list').append(html);
+                }
+            }
+        })
+    }
+
+    //친구 목록 조회
+    var friendsList = () => {
+        var friends = `<%- friends %>`;
+        friends = JSON.parse(friends);
+
+        var data = new Array();
+        for(var i=0; i<friends.length; i++){
+            data.push(friends[i].fno)
+        }
+        $.ajax({
+            url: '/user/userList',
+            dataType: 'json',
+            type: 'GET',
+            data: {data : data},
+            success: (result) => {
+                console.log(result);
+                document.querySelector('#list').innerHTML = "";
+                for(var i=0; i<result.length; i++){
+                    var html = `<div class="user ${result[i].no}">ID: ${result[i].id}  가입날짜: ${result[i].signup_date}`;
+                    html += `<div id="btn"><button class="accept" onclick="accept(${result[i].no})">친구삭제</button>`;
+                    html += `<button class="reject" onclick="reject(${result[i].no})">DM</button></div>`;
+                    html += `</div>`;
+                    $('#list').append(html);
+                }
+            }
+        })
+    }
+
+    //친구 신청 수락
+    var accept = (fno) => {
+        var uno = parseInt(`<%= uno %>`);
+        var data = {
+            uno: uno,
+            fno: fno
+        }
+        console.log(data);
+        $.ajax({
+            url: `/user/friending/accept`,
+            dataType: 'json',
+            type: 'POST',
+            data: data,
+            success: (result) => {
+                console.log(result);
+                location.href = location.href;
+            }
+        })
+    }
+
+    //친구 신청 거절
+    var reject = (fno) => {
+        var uno = parseInt(`<%= uno %>`);
+        var data = {
+            uno: uno,
+            fno: fno
+        }
+        console.log(data);
+        $.ajax({
+            url: `/user/friending/reject`,
+            dataType: 'json',
+            type: 'POST',
+            data: data,
+            success: (result) => {
+                console.log(result);
+                location.href = location.href;
+            }
+        })
+    }
+
+    //수신함 조회
+    var receive = () => {
+        document.querySelector('#list').innerHTML = "";
+        friendingList();
+    }
+
+    //목록 조회
+    var list = () => {
+        document.querySelector('#list').innerHTML = "";
+        friendsList();
+    }
+
+    //메뉴 이동
+    var roomMenu = () => {
+        location.href = '/rooms';
+    }
+    var userMenu = () => {
+        location.href = '/users';
+    }
+    var friendsMenu = () => {
+        location.href = '/friends';
+    }
+    var logout = () => {
+        location.href = '/logout';
+    }
+</script>

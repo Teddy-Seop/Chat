@@ -53,7 +53,7 @@ router.get('/chat/:no', (req, res) => {
                 data = rows[i];
                 list.push(data);
             }
-            //유저 정보
+            //로그인한 유저 정보
             var user = {
                 uno: req.session.uno,
                 uid: req.session.uid
@@ -72,12 +72,43 @@ router.get('/chat/:no', (req, res) => {
 //유저 목록 페이지
 router.get('/users', (req, res) => {
 
-    if(req.params.uno != null){
-        var sql = `SELECT * FROM user WHERE uno != ${req.params.uno}`;
+    if(req.session.uno != null){
+        var sql = `SELECT * FROM user WHERE no != ${req.session.uno}`;
         connection.query(sql, (err, rows) => {
             if(err) throw err;
 
-            res.render('users', {users: rows[0]});
+            //로그인한 유저 정보
+            var user = {
+                uno: req.session.uno,
+                uid: req.session.uid
+            }
+
+            var users = JSON.stringify(rows);
+            res.render('users', {
+                users: users,
+                user: user
+            });
+        })
+    }else{
+        res.redirect('/');
+    }
+})
+
+//친구 목록 페이지
+router.get('/friends', (req, res) => {
+    if(req.session.uno != null){
+        var sql1 = `SELECT * FROM friending WHERE fno = ${req.session.uno};`;
+        var sql2 = `SELECT * FROM friends WHERE uno = ${req.session.uno};`;
+        connection.query(sql1 + sql2, (err, rows) => {
+            if(err) throw err;
+
+            var friending = JSON.stringify(rows[0]);
+            var friends = JSON.stringify(rows[1]);
+            res.render('friends', {
+                uno: req.session.uno,
+                friending: friending,
+                friends: friends
+            });
         })
     }else{
         res.redirect('/');

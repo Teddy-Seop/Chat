@@ -50,15 +50,33 @@ crossorigin="anonymous"></script>
 <script>
     window.onload = () => {
         //유저 목록 출력
-        var users = `<%= users %>`;
-        rooms = JSON.parse(rooms);
-        for(var i=0; i<rooms.length; i++){
-            var html = `<div class="users">참여인원 수 : 3   방 번호 : ${rooms[i]}`;
-            html += `<button onclick='join(${users[i]})'>입장</button>`
+        var users = `<%- users %>`;
+        users = JSON.parse(users);
+        for(var i=0; i<users.length; i++){
+            var html = `<div id="${users[i].no}" class="users">ID : ${users[i].id}  가입날짜 : ${users[i].signup_date}  친구수 : `;
+            html += `<button onclick='friending(${users[i].no})'>친구추가</button>`
             html += `</div>`;
             
             $('#contents').append(html);
         }
+    }
+
+    //친구 추가
+    var friending = (no) => {
+        var data = {
+            uno: `<%- user.uno %>`,
+            uid: `<%- user.uid %>`,
+            fno: no
+        }
+        $.ajax({
+            url: '/user/friending',
+            dataType: 'json',
+            type: 'POST',
+            data: data,
+            success: (result) => {
+                console.log(result);
+            }
+        })
     }
 
     //메뉴 이동

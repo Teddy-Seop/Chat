@@ -37,4 +37,64 @@ router.post('/login', (req, res) => {
     })
 })
 
+//친구 요청
+router.post('/friending', (req, res) => {
+    console.log(req.body);
+    var sql = `INSERT INTO friending (uno, uid, fno) VALUES (${req.body.uno}, "${req.body.uid}", ${req.body.fno})`;
+    connection.query(sql, (err, rows) => {
+        if(err) throw err;
+
+        res.send('OK');
+    })
+})
+
+//친구 요청 수락
+router.post('/friending/accept', (req, res) => {
+    console.log(req.body);
+    var sql1 = `INSERT INTO friends (uno, fno) VALUES (${req.body.uno}, ${req.body.fno});`;
+    var sql2 = `INSERT INTO friends (uno, fno) VALUES (${req.body.fno}, ${req.body.uno});`
+    var sql3 = `DELETE FROM friending WHERE uno = ${req.body.fno} AND fno = ${req.body.uno};`;
+    connection.query(sql1 + sql2 + sql3, (err, rows) => {
+        if(err) throw err;
+
+        res.send({result: 'result'});
+    })
+})
+
+//친구 요청 거절
+router.post('/friending/reject', (req, res) => {
+    console.log(req.body);
+    var sql1 = `DELETE FROM friending WHERE uno = ${req.body.fno} AND fno = ${req.body.uno};`;
+    connection.query(sql1, (err, rows) => {
+        if(err) throw err;
+
+        res.send({result: 'result'});
+    })
+})
+
+//유저 리스트
+router.get('/userList', (req, res) => {
+    var data = req.query.data;
+    data = data.map(Number); //배열 값을 string에서 number로 형변환
+    var sql = `SELECT * FROM user WHERE no in (?)`;
+    connection.query(sql, [data], (err, rows) => {
+        if(err) throw err;
+        
+        res.send(rows);
+    })
+})
+
+//친구 리스트
+// router.get('/friendsList', (req, res) => {
+//     var data = req.query;
+//     console.log(data);
+//     //data = data.map(Number); //배열 값을 string에서 number로 형변환
+//     var sql = `SELECT * FROM friends WHERE uno = ${data.uno}`;
+//     connection.query(sql, [data], (err, rows) => {
+//         if(err) throw err;
+        
+//         res.send(rows);
+//     })
+// })
+
 module.exports = router;
