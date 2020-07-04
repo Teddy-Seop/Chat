@@ -13,7 +13,8 @@ const connection = mysql.createConnection({
     user: 'root',
     password: '1111',
     port: '3306',
-    database: 'chat'
+    database: 'chat',
+    multipleStatements: true
 })
 
 app.use(bodyParser.json());
@@ -43,7 +44,9 @@ app.post('/login', (req, res) => {
 
         //로그인 확인
         if(rows[0].id == id && rows[0].pw == pw){
-            req.session.uno = rows[0].no; //login session 생성
+            //login session 생성
+            req.session.uno = rows[0].no;
+            req.session.uid = rows[0].id;
             req.session.save(() => {
                 res.redirect('rooms');
             });
@@ -87,49 +90,102 @@ app.get('/chat/:no', (req, res) => {
                 data = rows[i];
                 list.push(data);
             }
-            var chat = JSON.stringify(list);
-            res.render('chat', {chat: chat});
+            //유저 정보
+            var user = {
+                uno: req.session.uno,
+                uid: req.session.uid
+            }
+            res.render('chat', {
+                rno: req.params.no,
+                chat: JSON.stringify(list),
+                user: JSON.stringify(user)
+            });
         })
     //}else{
     //    res.redirect('/');
     //}
 })
 
-io.sockets.on('connect', (socket) => {
-    var room;
+io.on('connection', (socket) => {
+    console.log('connect');
 
+    //채팅방 입장
+    socket.on('joinRoom', (data) => {
+        console.log(data);
+
+        //채팅방 유저 목록 삽입 조회 쿼리
+        var sql1 = `INSERT INTO room_userList (rno, uno, uid) VALUES (${data.rno}, ${data.uno}, "${data.uid}");`;
+        var sql2 = `SELECT * FROM room_userList WHERE rno = ${data.rno};`;
+        connection.query(sql1 + sql2, (err, rows) => {
+           if(err) throw err;
+           
+           console.log(rows[1]);
+           var msg = `<div>${rows[1][rows[1].length - 1].uid}님이 입장하였습니다.</div>`;
+           io.emit('message', msg);
+        })
+    })
+
+    //메시지 송수신
     socket.on('message', (data) => {
         console.log(data);
-        // var sql = `INSERT INTO message (message, type, user_no, channel_no)
-        //             VALUES ("${data.message}", 0, ${data.uno}, ${data.channel});`;
-        // connection.query(sql, (err, rows) => {
-        //   if(err) throw err;
-        //   console.log(rows);
-        // })
-        io.sockets.in(room).emit('message', data);
+        data = JSON.parse(data);
+        var msg = `<div>${data.uid} : ${data.msg}</div>`;
+        io.emit('message', msg);
     })
 
-    socket.on('joinRoom', (num, name) => {
-        room = num;
-        console.log(`${name} is join ${room}`);
-        socket.join(room);
-    });
+    //채팅방 나가기
+    socket.on('leaveRoom', (data) => {
 
-    socket.on('leaveRoom', (num, name) => {
-        socket.leave(num, () => {
-          console.log(name + ' leave a ' + num);
-        });
-    });
+        var sql = `DELETE FROM room_userList WHERE rno = ${data.rno}, uno = ${data.uno};`;
+        connection.query(sql, (err, rows) => {
+            var msg = `<div>${data.uid}님이 퇴장하였습니다.`
+            io.emit('message', msg);
+        })
+    })
 
+    //연결 종료
     socket.on('disconnect', () => {
-        console.log(`${socket.name} is disconnected`);
-        socket.broadcast.emit('update', {
-            type: 'disconnect',
-            name: 'SERVER',
-            message: `${socket.name} is disconnected`
-        });
+        console.log('disconnect');
     })
 })
+
+// io.sockets.on('connect', (socket) => {
+//     var room;
+
+//     console.log('user connect');
+
+//     socket.on('message', (data) => {
+//         console.log(data);
+//         // var sql = `INSERT INTO message (message, type, user_no, channel_no)
+//         //             VALUES ("${data.message}", 0, ${data.uno}, ${data.channel});`;
+//         // connection.query(sql, (err, rows) => {
+//         //   if(err) throw err;
+//         //   console.log(rows);
+//         // })
+//         io.sockets.in(room).emit('message', data);
+//     })
+
+//     socket.on('joinRoom', (num, name) => {
+//         room = num;
+//         console.log(`${name} is join ${room}`);
+//         socket.join(room);
+//     });
+
+//     socket.on('leaveRoom', (num, name) => {
+//         socket.leave(num, () => {
+//           console.log(name + ' leave a ' + num);
+//         });
+//     });
+
+//     socket.on('disconnect', () => {
+//         console.log(`${socket.name} is disconnected`);
+//         socket.broadcast.emit('update', {
+//             type: 'disconnect',
+//             name: 'SERVER',
+//             message: `${socket.name} is disconnected`
+//         });
+//     })
+// })
 
 server.listen(3000, () => {
     console.log('express is running on 3000');

@@ -3,28 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <style>
+        #txt{
+            border: 1px solid black;
+            height: 300px;
+            overflow: scroll;
+        }
+    </style>
 </head>
 <body>
-    <textarea id="txt" cols="30" rows="10"></textarea><br>
+    <div id="txt"></div>
+    <div id="userList"></div>
     <input type="text" id="message" />
     <button onclick="send()">SEND</button>
 </body>
 </html>
 
+<script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.js" 
 integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
 crossorigin="anonymous"></script>
 <script>
+    //socket io 연결
+    const socket = io();
+    var rno, uno, uid;
     window.onload = () => {
-        
-        //socket io 연결
-        
-
         //db에 저장된 채팅 출력
         var chat = `<%- chat %>`;
         chat = JSON.parse(chat);
         for(var i=0; i<chat.length; i++){
             $('#txt').append(`${chat[i].uid} : ${chat[i].msg}`)
         }
+
+        var val = `<%- rno %>`;
+        rno = JSON.parse(val);
+        val = `<%- user %>`;
+        user = JSON.parse(val);
+        uno = user.uno;
+        uid = user.uid;
+
+        //서버에 입장 메시지 송신
+        var data = {
+            rno: rno,
+            uno: uno,
+            uid: uid
+        }
+        socket.emit('joinRoom', data);
+
+        //유저 리스트
+        socket.on('userList', (data) => {
+            console.log(data);
+        })
+    }
+
+    //메시지 전송 함수
+    var send = () => {
+        var msg = $('#message').val();
+        //var user = `<%- user %>`;
+        //user = JSON.parse(user);
+        var data = {
+            uno: uno,
+            uid: uid,
+            msg: msg
+        }
+
+        //서버로 채팅 메시지 송신
+        socket.emit('message', JSON.stringify(data));
+        $('#message').val('');
+    }
+    //서버에서 채팅 메시지 수신
+    socket.on('message', (msg) => {
+        
+        $('#txt').append(msg);
+    })
+
+    //채팅방 나가기
+    var leave = () => {
+        var data = {
+            rno: rno,
+            uno: uno,
+            uid: uid
+        }
+        socket.emit('leaveRoom', data);
     }
 </script>
