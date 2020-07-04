@@ -62,7 +62,13 @@ io.on('connection', (socket) => {
         console.log(data);
         data = JSON.parse(data);
         var msg = `<div>${data.uid} : ${data.msg}</div>`;
-        io.to(data.rno).emit('message', msg);
+        
+        var sql = `INSERT INTO chat (msg, uno, uid, rno) VALUES ("${data.msg}", ${data.uno}, "${data.uid}", ${data.rno});`;
+        connection.query(sql, (err, rows) => {
+            if(err) throw err;
+
+            io.to(data.rno).emit('message', msg);
+        })
     })
 
     //채팅방 나가기

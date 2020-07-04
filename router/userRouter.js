@@ -13,15 +13,6 @@ const connection = mysql.createConnection({
   multipleStatements: true
 })
 
-// app.use(bodyParser.json());
-// app.use(express.urlencoded( {extended : false } ));
-// app.set('view engine', 'ejs');
-// app.use(session({
-//     secret:`@#@$MYSIGN#@$#$`,
-//     resave: false,
-//     saveUninitialized: true 
-// }))
-
 //로그인 처리
 router.post('/login', (req, res) => {
     

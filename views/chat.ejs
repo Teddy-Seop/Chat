@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <title>Document</title>
     <style>
+        #header{
+            border: 1px solid black;
+        }
+        #contents{
+            border: 1px solid black;
+            float: left;
+            width: 100%;
+        }
+        .menu{
+            float: left;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid black;
+        }
         #txt{
             border: 1px solid black;
             width: 50%;
@@ -24,13 +38,29 @@
     </style>
 </head>
 <body>
-    <div>방번호 : <%- rno %></div>
-    <div id="txt"></div>
-    <div id="userList"></div>
-    <div id="chat">
-        <input type="text" id="message" />
-        <button onclick="send()">SEND</button>
-        <button id="leave" onclick="leave()">나가기</button>
+    <div id="header">
+        <div id="roomMenu" class="menu" onclick="roomMenu()">
+            Rooms
+        </div>
+        <div id="userMenu" class="menu" onclick="userMenu()">
+            Users
+        </div>
+        <div id="friendsMenu" class="menu" onclick="friendsMenu()">
+            Friends
+        </div>
+        <div id="logout" class="menu" onclick="logout()">
+            logout
+        </div>
+    </div>
+    <div id="contents">
+        <div>방번호 : <%- rno %></div>
+        <div id="txt"></div>
+        <div id="userList"></div>
+        <div id="chat">
+            <input type="text" id="message" />
+            <button onclick="send()">SEND</button>
+            <button id="leave" onclick="leave()">나가기</button>
+        </div>
     </div>
 </body>
 </html>
@@ -48,7 +78,8 @@ crossorigin="anonymous"></script>
         var chat = `<%- chat %>`;
         chat = JSON.parse(chat);
         for(var i=0; i<chat.length; i++){
-            $('#txt').append(`${chat[i].uid} : ${chat[i].msg}`)
+            var msg = `<div>${chat[i].uid} : ${chat[i].msg}</div>`
+            $('#txt').append(msg)
         }
 
         var val = `<%- rno %>`;
@@ -106,5 +137,43 @@ crossorigin="anonymous"></script>
         }
         socket.emit('leaveRoom', data);
         location.href = '/rooms'
+    }
+
+    //메뉴 이동
+    var roomMenu = () => {
+        var data = {
+            rno: rno,
+            uno: uno,
+            uid: uid
+        }
+        socket.emit('leaveRoom', data);
+        location.href = '/rooms';
+    }
+    var userMenu = () => {
+        var data = {
+            rno: rno,
+            uno: uno,
+            uid: uid
+        }
+        socket.emit('leaveRoom', data);
+        location.href = '/users';
+    }
+    var friendsMenu = () => {
+        var data = {
+            rno: rno,
+            uno: uno,
+            uid: uid
+        }
+        socket.emit('leaveRoom', data);
+        location.href = '/friends';
+    }
+    var logout = () => {
+        var data = {
+            rno: rno,
+            uno: uno,
+            uid: uid
+        }
+        socket.emit('leaveRoom', data);
+        location.href = '/logout';
     }
 </script>

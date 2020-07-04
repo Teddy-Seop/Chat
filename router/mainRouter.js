@@ -13,15 +13,6 @@ const connection = mysql.createConnection({
   multipleStatements: true
 })
 
-// app.use(bodyParser.json());
-// app.use(express.urlencoded( {extended : false } ));
-// app.set('view engine', 'ejs');
-// app.use(session({
-//     secret:`@#@$MYSIGN#@$#$`,
-//     resave: false,
-//     saveUninitialized: true 
-// }))
-
 //초기 화면
 router.get('/', (req, res) => {
 
@@ -75,6 +66,21 @@ router.get('/chat/:no', (req, res) => {
         })
     }else{
        res.redirect('/');
+    }
+})
+
+//유저 목록 페이지
+router.get('/users', (req, res) => {
+
+    if(req.params.uno != null){
+        var sql = `SELECT * FROM user WHERE uno != ${req.params.uno}`;
+        connection.query(sql, (err, rows) => {
+            if(err) throw err;
+
+            res.render('users', {users: rows[0]});
+        })
+    }else{
+        res.redirect('/');
     }
 })
 
