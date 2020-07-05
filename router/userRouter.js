@@ -84,17 +84,4 @@ router.get('/userList', (req, res) => {
     })
 })
 
-//친구 리스트
-// router.get('/friendsList', (req, res) => {
-//     var data = req.query;
-//     console.log(data);
-//     //data = data.map(Number); //배열 값을 string에서 number로 형변환
-//     var sql = `SELECT * FROM friends WHERE uno = ${data.uno}`;
-//     connection.query(sql, [data], (err, rows) => {
-//         if(err) throw err;
-        
-//         res.send(rows);
-//     })
-// })
-
 module.exports = router;

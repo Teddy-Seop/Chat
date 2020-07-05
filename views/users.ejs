@@ -52,9 +52,22 @@ crossorigin="anonymous"></script>
         //유저 목록 출력
         var users = `<%- users %>`;
         users = JSON.parse(users);
+
+        var friends = `<%- friends %>`;
+        friends = JSON.parse(friends);
+        var arr = new Array();
+        for(var i=0; i<friends.length; i++){
+            arr.push(friends[i].fno);
+        }
+        console.log(arr);
+
         for(var i=0; i<users.length; i++){
-            var html = `<div id="${users[i].no}" class="users">ID : ${users[i].id}  가입날짜 : ${users[i].signup_date}  친구수 : `;
-            html += `<button onclick='friending(${users[i].no})'>친구추가</button>`
+            var html = `<div id="${users[i].no}" class="users">ID : ${users[i].id}  가입날짜 : ${users[i].signup_date}  친구수 : ${users[i].cnt}`;
+
+            //이미 친구인 사용자 체크
+            if(!arr.includes(users[i].no)){
+                html += `<button onclick='friending(${users[i].no})'>친구 요청</button>`
+            }
             html += `</div>`;
             
             $('#contents').append(html);

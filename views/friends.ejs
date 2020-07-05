@@ -116,8 +116,8 @@ crossorigin="anonymous"></script>
                 document.querySelector('#list').innerHTML = "";
                 for(var i=0; i<result.length; i++){
                     var html = `<div class="user ${result[i].no}">ID: ${result[i].id}  가입날짜: ${result[i].signup_date}`;
-                    html += `<div id="btn"><button class="accept" onclick="accept(${result[i].no})">친구삭제</button>`;
-                    html += `<button class="reject" onclick="reject(${result[i].no})">DM</button></div>`;
+                    html += `<div id="btn"><button class="accept" onclick="delete(${result[i].no})">친구삭제</button>`;
+                    html += `<button class="reject" onclick="dm(${result[i].no})">DM</button></div>`;
                     html += `</div>`;
                     $('#list').append(html);
                 }

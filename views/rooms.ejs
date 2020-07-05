@@ -50,11 +50,11 @@ crossorigin="anonymous"></script>
 <script>
     window.onload = () => {
         //채팅방 목록 출력
-        var rooms = `<%= rooms %>`;
+        var rooms = `<%- rooms %>`;
         rooms = JSON.parse(rooms);
         for(var i=0; i<rooms.length; i++){
-            var html = `<div class="rooms">참여인원 수 : 3   방 번호 : ${rooms[i]}`;
-            html += `<button onclick='join(${rooms[i]})'>입장</button>`
+            var html = `<div class="rooms">참여인원 수 : ${rooms[i].cnt}   방 번호 : ${rooms[i].no}`;
+            html += `<button onclick='join(${rooms[i].no})'>입장</button>`
             html += `</div>`;
             
             $('#contents').append(html);

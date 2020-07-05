@@ -23,16 +23,14 @@ router.get('/', (req, res) => {
 router.get('/rooms', (req, res) => {
 
     if(req.session.uno != null){
-        connection.query(`SELECT * FROM room`, (err, rows) => {
+        var sql = `SELECT r.no, count(ul.rno) as cnt FROM room as r `;
+        sql += `LEFT JOIN room_userlist as ul `;
+        sql += `ON r.no = ul.rno `;
+        sql += `GROUP BY r.no;`;
+        connection.query(sql, (err, rows) => {
             if(err) throw err;
             
-            //존재하는 채팅방 추출
-            var list = new Array();
-            for(var i=0; i<rows.length; i++){
-                
-                list.push(rows[i].no);
-            }
-            var rooms = JSON.stringify(list);
+            var rooms = JSON.stringify(rows);
             res.render('rooms', {rooms: rooms});
         })
     }else{
@@ -73,8 +71,14 @@ router.get('/chat/:no', (req, res) => {
 router.get('/users', (req, res) => {
 
     if(req.session.uno != null){
-        var sql = `SELECT * FROM user WHERE no != ${req.session.uno}`;
-        connection.query(sql, (err, rows) => {
+        var sql1 = `SELECT user.no, user.id, user.signup_date, count(friends.fno) as cnt `; 
+        sql1 += `FROM user `;
+        sql1 += 'LEFT JOIN friends ';
+        sql1 += `ON user.no = friends.uno `;
+        sql1 += `WHERE user.no != ${req.session.uno} `;
+        sql1 += `GROUP BY user.no;`;
+        sql2 = `SELECT * FROM friends WHERE uno = ${req.session.uno};`;
+        connection.query(sql1 + sql2, (err, rows) => {
             if(err) throw err;
 
             //로그인한 유저 정보
@@ -82,11 +86,13 @@ router.get('/users', (req, res) => {
                 uno: req.session.uno,
                 uid: req.session.uid
             }
-
-            var users = JSON.stringify(rows);
+            console.log(rows[0]);
+            var users = JSON.stringify(rows[0]); //전체 사용자
+            var friends = JSON.stringify(rows[1]); //친추가된 사용자
             res.render('users', {
                 users: users,
-                user: user
+                user: user,
+                friends: friends
             });
         })
     }else{

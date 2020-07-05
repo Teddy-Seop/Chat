@@ -93,44 +93,6 @@ io.on('connection', (socket) => {
     })
 })
 
-// io.sockets.on('connect', (socket) => {
-//     var room;
-
-//     console.log('user connect');
-
-//     socket.on('message', (data) => {
-//         console.log(data);
-//         // var sql = `INSERT INTO message (message, type, user_no, channel_no)
-//         //             VALUES ("${data.message}", 0, ${data.uno}, ${data.channel});`;
-//         // connection.query(sql, (err, rows) => {
-//         //   if(err) throw err;
-//         //   console.log(rows);
-//         // })
-//         io.sockets.in(room).emit('message', data);
-//     })
-
-//     socket.on('joinRoom', (num, name) => {
-//         room = num;
-//         console.log(`${name} is join ${room}`);
-//         socket.join(room);
-//     });
-
-//     socket.on('leaveRoom', (num, name) => {
-//         socket.leave(num, () => {
-//           console.log(name + ' leave a ' + num);
-//         });
-//     });
-
-//     socket.on('disconnect', () => {
-//         console.log(`${socket.name} is disconnected`);
-//         socket.broadcast.emit('update', {
-//             type: 'disconnect',
-//             name: 'SERVER',
-//             message: `${socket.name} is disconnected`
-//         });
-//     })
-// })
-
 server.listen(3000, () => {
     console.log('express is running on 3000');
 })
