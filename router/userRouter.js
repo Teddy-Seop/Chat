@@ -37,6 +37,21 @@ router.post('/login', (req, res) => {
     })
 })
 
+//로그아웃 처리
+router.get('/logout', (req, res) => {
+    if(req.session.uno != null){
+        req.session.destroy((err) => {
+            if(err){
+                console.log(err);            
+            }else{
+                res.redirect('/');
+            }
+        });
+    }else{
+        res.redirect('/');
+    }
+})
+
 //친구 요청
 router.post('/friending', (req, res) => {
     console.log(req.body);
