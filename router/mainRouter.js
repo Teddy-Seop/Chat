@@ -13,7 +13,6 @@ const connection = mysql.createConnection({
     password: '0504923f',
     port: '3306',
     database: 'heroku_9845308fa8906e9',
-  port: '3306',
   //database: 'chat',
   multipleStatements: true
 })

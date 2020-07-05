@@ -13,7 +13,6 @@ host: 'us-cdbr-east-02.cleardb.com',
     password: '0504923f',
     port: '3306',
     database: 'heroku_9845308fa8906e9',
-  port: '3306',
   //database: 'chat',
   multipleStatements: true
 })
