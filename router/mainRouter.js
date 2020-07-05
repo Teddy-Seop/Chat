@@ -19,6 +19,12 @@ router.get('/', (req, res) => {
     res.render('login');
 })
 
+//회원가입 화면
+router.get('/signup', (req, res) => {
+
+    res.render('signup');
+})
+
 //채팅방 목록
 router.get('/rooms', (req, res) => {
 

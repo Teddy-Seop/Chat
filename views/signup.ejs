@@ -30,18 +30,11 @@
 <body>
     <div id="login-section">
         <h1>GameSpring</h1>
-        <form method="POST" action="/user/login">
+        <form method="POST" action="/user/signup">
             <label>ID</label><input type="text" name="id" /><br/>
             <label>PW</label><input type="password" name="pw" /><br>
-            <button type="submit">로그인</button>
-            <button type="button" onclick="signup()">회원가입</button>
+            <button type="submit">회원가입</button>
         </form>
     </div>
 </body>
 </html>
-
-<script>
-    var signup = () => {
-        location.href = '/signup'
-    }
-</script>

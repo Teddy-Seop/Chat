@@ -62,7 +62,7 @@ crossorigin="anonymous"></script>
         console.log(arr);
 
         for(var i=0; i<users.length; i++){
-            var html = `<div id="${users[i].no}" class="users">ID : ${users[i].id}  가입날짜 : ${users[i].signup_date}  친구수 : ${users[i].cnt}`;
+            var html = `<div id="${users[i].no}" class="users">ID : ${users[i].id}  가입날짜 : ${formatDate(users[i].signup_date)}  친구수 : ${users[i].cnt}`;
 
             //이미 친구인 사용자 체크
             if(!arr.includes(users[i].no)){
@@ -90,6 +90,19 @@ crossorigin="anonymous"></script>
                 console.log(result);
             }
         })
+    }
+
+    //날자 형식 변환
+    var formatDate = (date) => {
+        var d = new Date(date);
+        var year = d.getFullYear();
+        var month = '' + (d.getMonth() + 1);
+        var day = '' + d.getDate();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
     }
 
     //메뉴 이동

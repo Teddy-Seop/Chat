@@ -37,6 +37,20 @@ router.post('/login', (req, res) => {
     })
 })
 
+//회원가입 처리
+router.post('/signup', (req, res) => {
+    //입력 id, pw 추출
+    var id = req.body.id;
+    var pw = req.body.pw;
+
+    var sql = `INSERT INTO user (id, pw) VALUES ("${id}", "${pw}");`;
+    connection.query(sql, (err, rows) => {
+        if(err) throw err;
+
+        res.redirect('/');
+    })
+})
+
 //로그아웃 처리
 router.get('/logout', (req, res) => {
     if(req.session.uno != null){
