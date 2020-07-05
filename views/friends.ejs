@@ -129,7 +129,7 @@ crossorigin="anonymous"></script>
                 console.log(result);
                 document.querySelector('#list').innerHTML = "";
                 for(var i=0; i<result.length; i++){
-                    var html = `<div class="user ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
+                    var html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
                     html += `<div id="btn"><button class="accept" onclick="del(${result[i].no})">친구삭제</button>`;
                     html += `<button class="reject" onclick="dm(${result[i].no})">DM</button></div>`;
                     html += `</div>`;
