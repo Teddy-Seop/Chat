@@ -14,6 +14,8 @@
         }
         .users{
             border: 1px solid black;
+            float: left;
+            width: 65%;
         }
         .menu{
             float: left;
@@ -99,7 +101,7 @@ crossorigin="anonymous"></script>
                 console.log(result);
                 document.querySelector('#list').innerHTML = "";
                 for(var i=0; i<result.length; i++){
-                    var html = `<div class="user ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
+                    var html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
                     html += `<div id="btn"><button class="accept" onclick="accept(${result[i].no})">수락</button>`;
                     html += `<button class="reject" onclick="reject(${result[i].no})">거절</button></div>`;
                     html += `</div>`;
