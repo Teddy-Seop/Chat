@@ -5,11 +5,16 @@ const app = express();
 const router = express.Router();
 const mysql = require('mysql');
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '1111',
+//   host: 'localhost',
+//   user: 'root',
+//   password: '1111',
+host: 'us-cdbr-east-02.cleardb.com',
+    user: 'b5a64202a70e5b',
+    password: '0504923f',
+    port: '3306',
+    database: 'heroku_9845308fa8906e9',
   port: '3306',
-  database: 'chat',
+  //database: 'chat',
   multipleStatements: true
 })
 
