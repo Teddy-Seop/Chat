@@ -72,6 +72,18 @@ router.post('/friending/reject', (req, res) => {
     })
 })
 
+//친구 삭제
+router.post('/friends/delete', (req, res) => {
+    console.log(parseInt(req.body.fno));
+    var sql1 = `DELETE FROM friends WHERE uno = ${req.body.uno} AND fno = ${req.body.fno};`;
+    var sql2 = `DELETE FROM friends WHERE uno = ${req.body.fno} AND fno = ${req.body.uno};`;
+    connection.query(sql1 + sql2, (err, rows) => {
+        if(err) throw err;
+
+        res.send({result: 'result'});
+    })
+})
+
 //유저 리스트
 router.get('/userList', (req, res) => {
     var data = req.query.data;
