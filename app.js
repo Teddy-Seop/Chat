@@ -34,6 +34,7 @@ app.use('/', mainRouter);
 io.on('connection', (socket) => {
     console.log('connect');
 
+    /* room chat start */
     //채팅방 입장
     socket.on('joinRoom', (data) => {
         console.log(data);
@@ -86,6 +87,29 @@ io.on('connection', (socket) => {
            io.to(data.rno).emit('userList', rows[1]);
         })
     })
+    /* room chat end */
+
+    /* dm chat start */
+    //DM 입장
+    socket.on('dm', (data) => {
+        //DM 입장
+        socket.join(data);
+    })
+
+    //DM메시지 송수신
+    socket.on('dm_message', (data) => {
+        console.log(data);
+        data = JSON.parse(data);
+        var msg = `<div>${data.uid} : ${data.msg}</div>`;
+        
+        var sql = `INSERT INTO dm_chat (uno, fno, uid, msg) VALUES (${data.uno}, ${data.fno}, "${data.uid}", "${data.msg}");`;
+        connection.query(sql, (err, rows) => {
+            if(err) throw err;
+
+            io.to(data.dm_room_no).emit('dm_message', msg);
+        })
+    })
+    /* dm chat end */
 
     //연결 종료
     socket.on('disconnect', () => {

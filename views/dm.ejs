@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        #header{
+            border: 1px solid black;
+        }
+        #contents{
+            border: 1px solid black;
+            float: left;
+            width: 100%;
+        }
+        .menu{
+            float: left;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid black;
+        }
+        #title{
+            text-align: center;
+            border-bottom: 1px solid black;
+        }
+        #txt{
+            border: 1px solid black;
+            width: 100%;
+            height: 300px;
+            overflow: scroll;
+            float: left;
+        }
+        #chat{
+            float: left;
+            width: 100%;
+        }
+        #leave{
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="roomMenu" class="menu" onclick="roomMenu()">
+            Rooms
+        </div>
+        <div id="userMenu" class="menu" onclick="userMenu()">
+            Users
+        </div>
+        <div id="friendsMenu" class="menu" onclick="friendsMenu()">
+            Friends
+        </div>
+        <div id="logout" class="menu" onclick="logout()">
+            logout
+        </div>
+    </div>
+    <div id="contents">
+        <div id="title"></div>
+        <div id="txt"></div>
+        <div id="chat">
+            <input type="text" id="message" />
+            <button onclick="send()">SEND</button>
+            <button id="leave" onclick="leave()">나가기</button>
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.js" 
+integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
+crossorigin="anonymous"></script>
+<script>
+    //socket io 연결
+    const socket = io();
+    var user, fuser, dm_room;
+
+    //db에 저장된 채팅 출력
+    window.onload = () => {
+        var chat = `<%- chat %>`;
+        chat = JSON.parse(chat);
+        for(var i=0; i<chat.length; i++){
+            var msg = `<div>${chat[i].uid} : ${chat[i].msg}</div>`
+            $('#txt').append(msg)
+        }
+
+        //사용자 정보 저장
+        user = `<%- user %>`;
+        user = JSON.parse(user);
+        
+        //친구 정보 저장
+        fuser = `<%- fuser %>`;
+        fuser = JSON.parse(fuser);
+
+        //dm room 정보 저장
+        dm_room = `<%- dm_room %>`;
+        dm_room = JSON.parse(dm_room);
+
+        //채팅방 이름 설정
+        document.querySelector('#title').innerHTML = fuser.id;
+
+        //DM 연결
+        socket.emit('dm', dm_room.no);
+    }
+
+    //메시지 전송 함수
+    var send = () => {
+        var msg = $('#message').val();
+        var data = {
+            uno: user.no,
+            fno: fuser.no,
+            uid: user.id,
+            msg: msg,
+            dm_room_no: dm_room.no
+        }
+
+        //서버로 채팅 메시지 송신
+        socket.emit('dm_message', JSON.stringify(data));
+        $('#message').val('');
+    }
+    //서버에서 채팅 메시지 수신
+    socket.on('dm_message', (msg) => {
+        
+        $('#txt').append(msg);
+    })
+
+    //메뉴 이동
+    var roomMenu = () => {
+        location.href = '/rooms';
+    }
+    var userMenu = () => {
+        location.href = '/users';
+    }
+    var friendsMenu = () => {
+        location.href = '/friends';
+    }
+    var logout = () => {
+        location.href = '/user/logout';
+    }
+</script>

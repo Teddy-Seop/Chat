@@ -185,10 +185,15 @@ crossorigin="anonymous"></script>
                 fno: fno
             },
             success: (result) => {
-                console.log('test');
                 location.href = location.href;
             }
         })
+    }
+
+    //DM
+    var dm = (fno) => {
+        var uno = parseInt(`<%= uno %>`);
+        location.href = `/dm/${uno}/${fno}`;
     }
 
     //메뉴 이동

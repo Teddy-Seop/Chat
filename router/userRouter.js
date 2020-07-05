@@ -40,6 +40,7 @@ router.post('/login', (req, res) => {
 //로그아웃 처리
 router.get('/logout', (req, res) => {
     if(req.session.uno != null){
+        //login session 삭제
         req.session.destroy((err) => {
             if(err){
                 console.log(err);            

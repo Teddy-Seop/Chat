@@ -121,4 +121,54 @@ router.get('/friends', (req, res) => {
     }
 })
 
+//DM 페이지
+router.get('/dm/:uno/:fno', (req, res) => {
+    if(req.session.uno != null){
+
+        //DM room 존재 여부 확인
+        var sql = `SELECT * FROM dm_room `;
+        sql += `WHERE (uno1 = ${req.params.uno} AND uno2 = ${req.params.fno}) OR (uno1 = ${req.params.fno} AND uno2 = ${req.params.uno})`;
+        connection.query(sql, (err, rows) => {
+            if(err) throw err;
+
+            if(rows[0] != null){
+                //채팅 메시지 조회
+                var sql1 = `SELECT * FROM dm_chat `;
+                sql1 += `WHERE (uno = ${req.params.uno} AND fno = ${req.params.fno}) OR (uno = ${req.params.fno} AND fno = ${req.params.uno}) `;
+                sql1 += `ORDER BY chat_time;`;
+                //친구 정보 조회
+                var sql2 = `SELECT * FROM user WHERE no = ${req.params.fno};`;
+                //사용자 정보 조회
+                var sql3 = `SELECT * FROM user WHERE no = ${req.params.uno};`;
+                //db room 조회
+                var sql4 = `SELECT * FROM dm_room WHERE (uno1 = ${req.params.uno} AND uno2 = ${req.params.fno}) OR (uno1 = ${req.params.fno} AND uno2 = ${req.params.uno});`
+                connection.query(sql1 + sql2 + sql3 + sql4, (err, rows) => {
+                    if(err) throw err;
+
+                    var chat = JSON.stringify(rows[0]);
+                    var fuser = JSON.stringify(rows[1][0]);
+                    var user = JSON.stringify(rows[2][0])
+                    var dm_room = JSON.stringify(rows[3][0]);
+                    res.render('dm', {
+                        chat: chat,
+                        fuser: fuser,
+                        user: user,
+                        dm_room: dm_room
+                    });
+                })
+            }else{
+                var sql1 = `INSERT INTO dm_room (uno1, uno2) VALUES (${req.params.uno}, ${req.params.fno});`;
+                connection.query(sql1, (err, rows) => {
+                    if(err) throw err;
+
+                    console.log('create');
+                    res.redirect(`/dm/${req.params.uno}/${req.params.fno}`);
+                })
+            }
+        })
+    }else{
+        res.redirect('/');
+    }
+})
+
 module.exports = router;
