@@ -5,16 +5,16 @@ const app = express();
 const router = express.Router();
 const mysql = require('mysql');
 const connection = mysql.createConnection({
-  //host: 'localhost',
-  //user: 'root',
-  //password: '1111',
-  host: 'us-cdbr-east-02.cleardb.com',
-    user: 'b5a64202a70e5b',
-    password: '0504923f',
+    host: 'localhost',
+    user: 'root',
+    password: '1111',
+    // host: 'us-cdbr-east-02.cleardb.com',
+    // user: 'b5a64202a70e5b',
+    // password: '0504923f',
     port: '3306',
-    database: 'heroku_9845308fa8906e9',
-  //database: 'chat',
-  multipleStatements: true
+    //database: 'heroku_9845308fa8906e9',
+     database: 'chat',
+    multipleStatements: true
 })
 
 //초기 화면
@@ -39,7 +39,7 @@ router.get('/rooms', (req, res) => {
         sql += `GROUP BY r.no;`;
         connection.query(sql, (err, rows) => {
             if(err) throw err;
-            
+            console.log(userList);
             var rooms = JSON.stringify(rows);
             res.render('rooms', {rooms: rooms});
         })

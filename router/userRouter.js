@@ -5,16 +5,16 @@ const app = express();
 const router = express.Router();
 const mysql = require('mysql');
 const connection = mysql.createConnection({
-//   host: 'localhost',
-//   user: 'root',
-//   password: '1111',
-host: 'us-cdbr-east-02.cleardb.com',
-    user: 'b5a64202a70e5b',
-    password: '0504923f',
+    host: 'localhost',
+    user: 'root',
+    password: '1111',
+    // host: 'us-cdbr-east-02.cleardb.com',
+    // user: 'b5a64202a70e5b',
+    // password: '0504923f',
     port: '3306',
-    database: 'heroku_9845308fa8906e9',
-  //database: 'chat',
-  multipleStatements: true
+    //database: 'heroku_9845308fa8906e9',
+     database: 'chat',
+    multipleStatements: true
 })
 
 //로그인 처리
@@ -26,12 +26,19 @@ router.post('/login', (req, res) => {
 
     connection.query(`SELECT * FROM user WHERE id="${id}"`, (err, rows) => {
         if(err) throw err;
-
+        console.log(req);
+        
         //로그인 확인
         if(rows[0].id == id && rows[0].pw == pw){
             //login session 생성
             req.session.uno = rows[0].no;
             req.session.uid = rows[0].id;
+
+            //2차 테스트
+            //userList 추가
+            userList.push(rows[0].id);
+            console.log(userList); //결과 출력
+            
             req.session.save(() => {
                 res.redirect('/rooms');
             });
@@ -58,6 +65,11 @@ router.post('/signup', (req, res) => {
 //로그아웃 처리
 router.get('/logout', (req, res) => {
     if(req.session.uno != null){
+        //2차 테스트
+        //유저 리스트에서 해당 유저 삭제
+        userList.splice(userList.indexOf(`${req.session.uid}`), 1);
+        console.log(userList);
+        
         //login session 삭제
         req.session.destroy((err) => {
             if(err){
