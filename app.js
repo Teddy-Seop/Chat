@@ -37,6 +37,7 @@ app.use('/', mainRouter);
 
 let userList = new Array();
 global.userList = userList;
+var userInfos = [];
 
 io.on('connection', (socket) => {
     console.log('connect');
@@ -48,6 +49,14 @@ io.on('connection', (socket) => {
 
         //방 입장
         socket.join(data.rno);
+
+        //2차 테스트
+        //접속한 유저 정보 저장
+        var userInfo = new Object();
+        userInfo.uid = data.uid;
+        userInfo.socketid = socket.id
+        userInfos.push(userInfo);
+        console.log(userInfos);
 
         //채팅방 유저 목록 삽입 조회 쿼리
         var sql1 = `INSERT INTO room_userList (rno, uno, uid) VALUES (${data.rno}, ${data.uno}, "${data.uid}");`;
@@ -69,14 +78,35 @@ io.on('connection', (socket) => {
     socket.on('message', (data) => {
         console.log(data);
         data = JSON.parse(data);
-        var msg = `<div>${data.uid} : ${data.msg}</div>`;
-        
-        var sql = `INSERT INTO chat (msg, uno, uid, rno) VALUES ("${data.msg}", ${data.uno}, "${data.uid}", ${data.rno});`;
-        connection.query(sql, (err, rows) => {
-            if(err) throw err;
 
-            io.to(data.rno).emit('message', msg);
-        })
+        //2차 테스트
+        //귓속말 기능
+        if(data.msg.includes(`/귓속말`)){
+            var data = data.msg.split(' ');
+            var id = data[1];
+            var msg = `귓속말 : `;
+
+            //메시지
+            for(var i=2; i<data.length; i++){
+                msg += `${data[i]} `;
+            }
+
+            //특정 socket id 값 꺼내서 귓속말 전송
+            for(var i=0; i<userInfos.length; i++){
+                if(userInfos[i].uid == id){
+                    io.to(userInfos[i].socketid).emit('message', msg);
+                }
+            }
+        }else{
+            var msg = `<div>${data.uid} : ${data.msg}</div>`;
+        
+            var sql = `INSERT INTO chat (msg, uno, uid, rno) VALUES ("${data.msg}", ${data.uno}, "${data.uid}", ${data.rno});`;
+            connection.query(sql, (err, rows) => {
+                if(err) throw err;
+
+                io.to(data.rno).emit('message', msg);
+            })
+        }
     })
 
     //채팅방 나가기

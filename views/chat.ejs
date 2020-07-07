@@ -99,7 +99,6 @@ crossorigin="anonymous"></script>
 
         //유저 리스트
         socket.on('userList', (data) => {
-            console.log(data[3]);
             document.querySelector('#userList').innerHTML = '';
             $('#userList').append(`<div><h2>현재 인원 : ${data.length}</h2></div>`);
             for(var i=0; i<data.length; i++){
