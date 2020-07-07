@@ -34,7 +34,7 @@ router.post('/login', (req, res) => {
             //동일 ID 접속 처리
             if(userList.includes(`${id}`)){
                 var script = `<script>`;
-                script += `alert("이미  해당 ${id}는 Login 중입니다.");`
+                script += `alert("이미 해당 ${id}는 Login 중입니다.");`
                 script += `location.href = '/';`;
                 script += `</script>`;
                 res.send(script);
@@ -46,7 +46,6 @@ router.post('/login', (req, res) => {
                 //2차 테스트
                 //userList 추가
                 userList.push(rows[0].id);
-                console.log(userList); //결과 출력
                 
                 req.session.save(() => {
                     res.redirect('/rooms');

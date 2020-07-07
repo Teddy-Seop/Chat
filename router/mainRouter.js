@@ -39,7 +39,7 @@ router.get('/rooms', (req, res) => {
         sql += `GROUP BY r.no;`;
         connection.query(sql, (err, rows) => {
             if(err) throw err;
-            console.log(userList);
+            console.log(`접속한 사용자 리스트 : ${userList}`); //결과 출력
             var rooms = JSON.stringify(rows);
             res.render('rooms', {rooms: rooms});
         })
