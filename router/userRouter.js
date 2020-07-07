@@ -30,18 +30,28 @@ router.post('/login', (req, res) => {
         
         //로그인 확인
         if(rows[0].id == id && rows[0].pw == pw){
-            //login session 생성
-            req.session.uno = rows[0].no;
-            req.session.uid = rows[0].id;
-
             //2차 테스트
-            //userList 추가
-            userList.push(rows[0].id);
-            console.log(userList); //결과 출력
-            
-            req.session.save(() => {
-                res.redirect('/rooms');
-            });
+            //동일 ID 접속 처리
+            if(userList.includes(`${id}`)){
+                var script = `<script>`;
+                script += `alert("이미  해당 ${id}는 Login 중입니다.");`
+                script += `location.href = '/';`;
+                script += `</script>`;
+                res.send(script);
+            }else{
+                //login session 생성
+                req.session.uno = rows[0].no;
+                req.session.uid = rows[0].id;
+
+                //2차 테스트
+                //userList 추가
+                userList.push(rows[0].id);
+                console.log(userList); //결과 출력
+                
+                req.session.save(() => {
+                    res.redirect('/rooms');
+                });
+            }
         }else{
             res.redirect('/');
         }
