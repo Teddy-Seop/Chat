@@ -4,11 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
-const mainController_1 = __importDefault(require("./controller/mainController"));
+const MainController_1 = __importDefault(require("./Controller/MainController"));
+const UserController_1 = __importDefault(require("./Controller/UserController"));
 const app = new app_1.default([
     {
         url: '/',
-        object: new mainController_1.default()
+        object: new MainController_1.default()
+    },
+    {
+        url: '/user',
+        object: new UserController_1.default()
     }
 ], 3000);
 app.listen();

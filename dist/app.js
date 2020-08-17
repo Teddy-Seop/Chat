@@ -5,12 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const path_1 = __importDefault(require("path"));
 class App {
     constructor(controllers, port) {
         this.port = port;
         this.app = new express_1.default();
-        this.initRouters(controllers);
         this.initMiddlewares();
+        this.initRouters(controllers);
     }
     initRouters(controllers) {
         controllers.map((controller) => {
@@ -19,7 +20,9 @@ class App {
     }
     initMiddlewares() {
         this.app.use(body_parser_1.default.json());
-        this.app.use(express_1.default.urlencoded({ extended: false }));
+        this.app.use(body_parser_1.default.urlencoded({ extended: false }));
+        this.app.set('views', path_1.default.join(__dirname, '../views'));
+        this.app.set('view engine', 'ejs');
     }
     listen() {
         this.app.listen(this.port, () => {

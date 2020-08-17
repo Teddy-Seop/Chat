@@ -1,11 +1,16 @@
 import App from './app';
-import mainController from './controller/mainController';
+import MainController from './Controller/MainController';
+import UserController from './Controller/UserController';
 
 const app = new App(
     [
         {
             url: '/',
-            object: new mainController()
+            object: new MainController()
+        },
+        {
+            url: '/user',
+            object: new UserController()
         }
     ],
     3000
