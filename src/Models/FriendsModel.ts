@@ -22,13 +22,10 @@ Friends.init({
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
-    },
-    fno: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     }
 }, {sequelize, modelName: 'friends', tableName: 'friends'});
 
-Friends.belongsTo(UserModel);
+Friends.belongsTo(UserModel, { as: 'user' });
+Friends.belongsTo(UserModel, { as: 'friends' });
 
 export default Friends;

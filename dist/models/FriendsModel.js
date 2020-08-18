@@ -24,12 +24,9 @@ Friends.init({
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
-    },
-    fno: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false
     }
 }, { sequelize, modelName: 'friends', tableName: 'friends' });
-Friends.belongsTo(UserModel_1.default);
+Friends.belongsTo(UserModel_1.default, { as: 'user' });
+Friends.belongsTo(UserModel_1.default, { as: 'friends' });
 exports.default = Friends;
 //# sourceMappingURL=FriendsModel.js.map

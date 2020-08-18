@@ -16,17 +16,25 @@ const sequelize = new sequelize_1.Sequelize(config.database, config.username, co
     host: config.host,
     dialect: 'mysql'
 });
-class DmRoom extends sequelize_1.Model {
+class DmChat extends sequelize_1.Model {
 }
-DmRoom.init({
+DmChat.init({
     no: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
-    }
-}, { sequelize, modelName: 'dmRoom', tableName: 'dmRoom' });
-DmRoom.belongsTo(UserModel_1.default, { as: 'user1' });
-DmRoom.belongsTo(UserModel_1.default, { as: 'user2' });
-exports.default = DmRoom;
-//# sourceMappingURL=DmRoomModel.js.map
+    },
+    uid: {
+        type: sequelize_1.DataTypes.STRING(45),
+        allowNull: false
+    },
+    msg: {
+        type: sequelize_1.DataTypes.STRING(300),
+        allowNull: false
+    },
+}, { sequelize, modelName: 'dmChat', tableName: 'dm_Chat' });
+DmChat.belongsTo(UserModel_1.default, { as: 'user' });
+DmChat.belongsTo(UserModel_1.default, { as: 'friends' });
+exports.default = DmChat;
+//# sourceMappingURL=DmChatModel.js.map

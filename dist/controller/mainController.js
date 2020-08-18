@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const RoomService_1 = __importDefault(require("../Service/RoomService"));
+const ChatService_1 = __importDefault(require("../Service/ChatService"));
 class MainConroller {
     constructor() {
         this.router = express_1.default.Router();
@@ -34,7 +35,23 @@ class MainConroller {
             let roomList = yield this.roomService.getRoomList();
             res.json(roomList);
         });
+        // join chatting room
+        this.renderChat = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            let roomNo = req.params.no;
+            let chat = yield this.chatService.getChatList(roomNo);
+            let user = {
+                userNo: 1,
+                uid: 'test'
+            };
+            let json = {
+                roomNo: req.params.no,
+                chat: JSON.stringify(chat),
+                user: JSON.stringify(user)
+            };
+            res.render('chat', json);
+        });
         this.roomService = new RoomService_1.default();
+        this.chatService = new ChatService_1.default();
         this.initRouters();
     }
     initRouters() {
@@ -42,6 +59,7 @@ class MainConroller {
         this.router.get('/signup', this.renderSignup);
         this.router.get('/rooms', this.renderRooms);
         this.router.get('/roomList', this.getRoomList);
+        this.router.get('/chat/:no', this.renderChat);
     }
 }
 exports.default = MainConroller;

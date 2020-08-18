@@ -14,9 +14,9 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
     dialect: 'mysql'
 });
 
-class RoomUserList extends Model {}
+class DmRoom extends Model {}
 
-RoomUserList.init({
+DmRoom.init({
     no: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -25,7 +25,7 @@ RoomUserList.init({
     }
 }, {sequelize, modelName: 'dmRoom', tableName: 'dmRoom'});
 
-RoomUserList.belongsTo(UserModel, { as: 'user1' });
-RoomUserList.belongsTo(UserModel, { as: 'user2' });
+DmRoom.belongsTo(UserModel, { as: 'user1' });
+DmRoom.belongsTo(UserModel, { as: 'user2' });
 
-export default RoomUserList;
+export default DmRoom;

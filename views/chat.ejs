@@ -53,7 +53,7 @@
         </div>
     </div>
     <div id="contents">
-        <div>방번호 : <%- rno %></div>
+        <div>방번호 : <%- roomNo %></div>
         <div id="txt"></div>
         <div id="userList"></div>
         <div id="chat">
@@ -72,27 +72,28 @@ crossorigin="anonymous"></script>
 <script>
     //socket io 연결
     const socket = io();
-    var rno, uno, uid;
+    var roomNo, userNo, uid;
     window.onload = () => {
         //db에 저장된 채팅 출력
         var chat = `<%- chat %>`;
         chat = JSON.parse(chat);
+
         for(var i=0; i<chat.length; i++){
             var msg = `<div>${chat[i].uid} : ${chat[i].msg}</div>`
             $('#txt').append(msg)
         }
 
-        var val = `<%- rno %>`;
-        rno = JSON.parse(val);
-        val = `<%- user %>`;
-        user = JSON.parse(val);
-        uno = user.uno;
+        roomNo = `<%- roomNo %>`;
+        roomNo = JSON.parse(roomNo);
+        user = `<%- user %>`;
+        user = JSON.parse(user);
+        userNo = user.userNo;
         uid = user.uid;
 
         //서버에 입장 메시지 송신
         var data = {
-            rno: rno,
-            uno: uno,
+            roomNo: roomNo,
+            userNo: userNo,
             uid: uid
         }
         socket.emit('joinRoom', data);
@@ -108,30 +109,35 @@ crossorigin="anonymous"></script>
     }
 
     //메시지 전송 함수
-    var send = () => {
+    var send = async () => {
         var msg = $('#message').val();
         var data = {
-            rno: rno,
-            uno: uno,
+            roomNo: roomNo,
+            userNo: userNo,
             uid: uid,
             msg: msg
         }
 
         //서버로 채팅 메시지 송신
-        socket.emit('message', JSON.stringify(data));
+        $.ajax({
+            url: '/chat/insertMessage',
+            type: 'POST',
+            dataType: 'json',
+            data: data
+        })
+        socket.emit('message', data);
         $('#message').val('');
     }
     //서버에서 채팅 메시지 수신
     socket.on('message', (msg) => {
-        
         $('#txt').append(msg);
     })
 
     //채팅방 나가기
     var leave = () => {
         var data = {
-            rno: rno,
-            uno: uno,
+            roomNo: roomNo,
+            userNo: userNo,
             uid: uid
         }
         socket.emit('leaveRoom', data);
@@ -141,8 +147,8 @@ crossorigin="anonymous"></script>
     //메뉴 이동
     var roomMenu = () => {
         var data = {
-            rno: rno,
-            uno: uno,
+            roomNo: roomNo,
+            userNo: userNo,
             uid: uid
         }
         socket.emit('leaveRoom', data);
@@ -150,8 +156,8 @@ crossorigin="anonymous"></script>
     }
     var userMenu = () => {
         var data = {
-            rno: rno,
-            uno: uno,
+            roomNo: roomNo,
+            userNo: userNo,
             uid: uid
         }
         socket.emit('leaveRoom', data);
@@ -159,8 +165,8 @@ crossorigin="anonymous"></script>
     }
     var friendsMenu = () => {
         var data = {
-            rno: rno,
-            uno: uno,
+            roomNo: roomNo,
+            userNo: userNo,
             uid: uid
         }
         socket.emit('leaveRoom', data);
@@ -168,8 +174,8 @@ crossorigin="anonymous"></script>
     }
     var logout = () => {
         var data = {
-            rno: rno,
-            uno: uno,
+            roomNo: roomNo,
+            userNo: userNo,
             uid: uid
         }
         socket.emit('leaveRoom', data);

@@ -24,8 +24,8 @@ class App {
         this.app.set('views', path_1.default.join(__dirname, '../views'));
         this.app.set('view engine', 'ejs');
     }
-    listen() {
-        this.app.listen(this.port, () => {
+    listen(server) {
+        server.listen(this.port, () => {
             console.log(`Server is running on ${this.port}`);
         });
     }
