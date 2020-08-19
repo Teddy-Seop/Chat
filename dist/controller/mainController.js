@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const RoomService_1 = __importDefault(require("../Service/RoomService"));
 const ChatService_1 = __importDefault(require("../Service/ChatService"));
+const UserService_1 = __importDefault(require("../Service/UserService"));
 class MainConroller {
     constructor() {
         this.router = express_1.default.Router();
@@ -35,23 +36,37 @@ class MainConroller {
             let roomList = yield this.roomService.getRoomList();
             res.json(roomList);
         });
+        // get user count
+        this.getUserCount = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            let count = yield this.roomService.getUserCount(req.query);
+            res.json({ count: count });
+        });
         // join chatting room
         this.renderChat = (req, res) => __awaiter(this, void 0, void 0, function* () {
             let roomNo = req.params.no;
             let chat = yield this.chatService.getChatList(roomNo);
-            let user = {
-                userNo: 1,
-                uid: 'test'
-            };
             let json = {
                 roomNo: req.params.no,
                 chat: JSON.stringify(chat),
-                user: JSON.stringify(user)
+                user: JSON.stringify(req.session.user)
             };
             res.render('chat', json);
         });
+        this.renderUsers = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            let users = yield this.userService.getUserList();
+            let frineds = yield this.userService.getFriendsList(req.session.user);
+            res.render('users', {
+                user: JSON.stringify(req.session.user),
+                users: JSON.stringify(users),
+                friends: JSON.stringify(frineds),
+            });
+        });
+        this.renderFriends = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            res.render('friends');
+        });
         this.roomService = new RoomService_1.default();
         this.chatService = new ChatService_1.default();
+        this.userService = new UserService_1.default();
         this.initRouters();
     }
     initRouters() {
@@ -59,7 +74,10 @@ class MainConroller {
         this.router.get('/signup', this.renderSignup);
         this.router.get('/rooms', this.renderRooms);
         this.router.get('/roomList', this.getRoomList);
-        this.router.get('/chat/:no', this.renderChat);
+        this.router.get('/userCount', this.getUserCount);
+        this.router.get('/room/:no', this.renderChat);
+        this.router.get('/users', this.renderUsers);
+        this.router.get('/friends', this.renderFriends);
     }
 }
 exports.default = MainConroller;

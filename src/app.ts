@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import session from 'express-session';
 import path from 'path';
 
 class App {
@@ -21,6 +22,11 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended : false }));
         this.app.set('views', path.join(__dirname, '../views'));
         this.app.set('view engine', 'ejs');
+        this.app.use(session({
+            secret:`@#@$MYSIGN#@$#$`,
+            resave: false,
+            saveUninitialized: true 
+        }))
     }
 
     public listen(server) {

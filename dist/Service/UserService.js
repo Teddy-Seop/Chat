@@ -21,6 +21,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typedi_1 = require("typedi");
 require("reflect-metadata");
 const UserModel_1 = __importDefault(require("../Models/UserModel"));
+const FriendsModel_1 = __importDefault(require("../Models/FriendsModel"));
 let UserService = class UserService {
     constructor() {
         this.getUserInfo = (id) => __awaiter(this, void 0, void 0, function* () {
@@ -33,6 +34,22 @@ let UserService = class UserService {
         });
         this.createUser = (json) => __awaiter(this, void 0, void 0, function* () {
             yield UserModel_1.default.create(json);
+        });
+        this.getUserList = () => __awaiter(this, void 0, void 0, function* () {
+            let userList = yield UserModel_1.default.findAll({ raw: true });
+            return userList;
+        });
+        this.getFriendsList = (json) => __awaiter(this, void 0, void 0, function* () {
+            let friendsList = yield FriendsModel_1.default.findAll({
+                where: {
+                    userNo: json.no
+                },
+                raw: true
+            });
+            return friendsList;
+        });
+        this.friending = (json) => __awaiter(this, void 0, void 0, function* () {
+            // await = 
         });
     }
 };

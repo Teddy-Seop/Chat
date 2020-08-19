@@ -28,7 +28,7 @@ RoomUserList.init({
       type: DataTypes.STRING(45),
       allowNull: false
     }
-}, {sequelize, modelName: 'roomUserList', tableName: 'roomUserList', timestamps: true});
+}, {sequelize, modelName: 'roomUserList', tableName: 'room_userList', timestamps: true});
 
 RoomUserList.belongsTo(UserModel);
 RoomUserList.belongsTo(RoomModel);

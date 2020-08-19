@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const express_session_1 = __importDefault(require("express-session"));
 const path_1 = __importDefault(require("path"));
 class App {
     constructor(controllers, port) {
@@ -23,6 +24,11 @@ class App {
         this.app.use(body_parser_1.default.urlencoded({ extended: false }));
         this.app.set('views', path_1.default.join(__dirname, '../views'));
         this.app.set('view engine', 'ejs');
+        this.app.use(express_session_1.default({
+            secret: `@#@$MYSIGN#@$#$`,
+            resave: false,
+            saveUninitialized: true
+        }));
     }
     listen(server) {
         server.listen(this.port, () => {

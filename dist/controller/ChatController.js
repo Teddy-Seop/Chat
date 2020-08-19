@@ -14,17 +14,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ChatService_1 = __importDefault(require("../Service/ChatService"));
+const RoomService_1 = __importDefault(require("../Service/RoomService"));
 class ChatController {
     constructor() {
         this.router = express_1.default.Router();
         this.insertMessage = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            this.chatService.insertMessage(req.body);
+            yield this.chatService.insertMessage(req.body);
+        });
+        this.getUserList = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            let json = {
+                where: {
+                    roomNo: req.query.roomNo
+                }
+            };
+            let userList = yield this.roomService.getUserList(json);
+            res.json(userList);
+        });
+        this.insertUserList = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.roomService.insertUserList(req.body);
+            res.json({ result: 'OK' });
+        });
+        this.deleteUserList = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            yield this.roomService.deleteUserList(req.body);
+            res.json({ result: 'OK' });
         });
         this.chatService = new ChatService_1.default();
+        this.roomService = new RoomService_1.default();
         this.initRouters();
     }
     initRouters() {
-        this.router.post('/insertMessage', this.insertMessage);
+        this.router.post('/message', this.insertMessage);
+        this.router.get('/userList', this.getUserList);
+        this.router.post('/userList', this.insertUserList);
+        this.router.delete('/userList', this.deleteUserList);
     }
 }
 exports.default = ChatController;
