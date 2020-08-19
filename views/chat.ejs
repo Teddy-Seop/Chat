@@ -87,8 +87,8 @@ crossorigin="anonymous"></script>
         roomNo = JSON.parse(roomNo);
         user = `<%- user %>`;
         user = JSON.parse(user);
-        userNo = user.userNo;
-        uid = user.uid;
+        userNo = user.no;
+        uid = user.id;
 
         //서버에 입장 메시지 송신
         let data = {
@@ -166,7 +166,6 @@ crossorigin="anonymous"></script>
             data: data
         })
         .done((result) => {
-            console.log(result)
             document.querySelector('#userList').innerHTML = '';
             $('#userList').append(`<div><h2>현재 인원 : ${result.length}</h2></div>`);
             for(var i=0; i<result.length; i++){

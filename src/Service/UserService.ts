@@ -12,11 +12,32 @@ class UserService {
             }
         })
 
-        return userInfo
+        return userInfo;
     }
 
     public createUser = async (json) => {
         await userModel.create(json);
+    }
+
+    public getUserList = async () => {
+        let userList = await userModel.findAll({ raw: true });
+
+        return userList;
+    }
+
+    public getFriendsList = async (json) => {
+        let friendsList = await friendsModel.findAll({
+            where: {
+                userNo: json.no
+            },
+            raw: true
+        });
+
+        return friendsList;
+    }
+
+    public friending = async (json) => {
+        // await = 
     }
 }
 

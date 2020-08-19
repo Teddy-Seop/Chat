@@ -48,21 +48,21 @@
 integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
 crossorigin="anonymous"></script>
 <script>
-    window.onload = () => {
+    window.onload = async () => {
         //유저 목록 출력
-        var users = `<%- users %>`;
+        let users = `<%- users %>`;
         users = JSON.parse(users);
 
-        var friends = `<%- friends %>`;
+        let friends = `<%- friends %>`;
         friends = JSON.parse(friends);
-        var arr = new Array();
-        for(var i=0; i<friends.length; i++){
+        let arr = new Array();
+        for(let i=0; i<friends.length; i++){
             arr.push(friends[i].fno);
         }
-        console.log(arr);
 
-        for(var i=0; i<users.length; i++){
-            var html = `<div id="${users[i].no}" class="users">ID : ${users[i].id}  가입날짜 : ${formatDate(users[i].signup_date)}  친구수 : ${users[i].cnt}`;
+        for(let i=0; i<users.length; i++){
+            let count = await friendsCount(users[i].no);
+            let html = `<div id="${users[i].no}" class="users">ID : ${users[i].id}  가입날짜 : ${formatDate(users[i].createdAt)}  친구수 : ${count}`;
 
             //이미 친구인 사용자 체크
             if(!arr.includes(users[i].no)){
@@ -75,10 +75,10 @@ crossorigin="anonymous"></script>
     }
 
     //친구 추가
-    var friending = (no) => {
-        var data = {
-            uno: `<%- user.uno %>`,
-            uid: `<%- user.uid %>`,
+    let friending = (no) => {
+        let data = {
+            uno: `<%- user.no %>`,
+            uid: `<%- user.id %>`,
             fno: no
         }
         $.ajax({
@@ -92,12 +92,27 @@ crossorigin="anonymous"></script>
         })
     }
 
-    //날자 형식 변환
-    var formatDate = (date) => {
-        var d = new Date(date);
-        var year = d.getFullYear();
-        var month = '' + (d.getMonth() + 1);
-        var day = '' + d.getDate();
+    let friendsCount = async (no) => {
+        let count;
+        await $.ajax({
+            url: '/user/friendsCount',
+            dataType: 'json',
+            type: 'GET',
+            data: { no: no }
+        })
+        .done((result) => {
+            count = result.count;
+        })
+        console.log(count);
+        return count;
+    }
+
+    //날짜 형식 변환
+    let formatDate = (date) => {
+        let d = new Date(date);
+        let year = d.getFullYear();
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
 
         if (month.length < 2) month = '0' + month;
         if (day.length < 2) day = '0' + day;
@@ -106,16 +121,16 @@ crossorigin="anonymous"></script>
     }
 
     //메뉴 이동
-    var roomMenu = () => {
+    let roomMenu = () => {
         location.href = '/rooms';
     }
-    var userMenu = () => {
+    let userMenu = () => {
         location.href = '/users';
     }
-    var friendsMenu = () => {
+    let friendsMenu = () => {
         location.href = '/friends';
     }
-    var logout = () => {
+    let logout = () => {
         location.href = '/user/logout';
     }
 </script>

@@ -25,7 +25,12 @@ class ChatController {
     }
 
     public getUserList = async (req: express.Request, res: express.Response) => {
-        let userList = await this.roomService.getUserList(req.query);
+        let json = {
+            where: {
+                roomNo: req.query.roomNo
+            }
+        }
+        let userList = await this.roomService.getUserList(json);
 
         res.json(userList);
     }

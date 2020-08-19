@@ -22,7 +22,12 @@ class ChatController {
             yield this.chatService.insertMessage(req.body);
         });
         this.getUserList = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            let userList = yield this.roomService.getUserList(req.query);
+            let json = {
+                where: {
+                    roomNo: req.query.roomNo
+                }
+            };
+            let userList = yield this.roomService.getUserList(json);
             res.json(userList);
         });
         this.insertUserList = (req, res) => __awaiter(this, void 0, void 0, function* () {

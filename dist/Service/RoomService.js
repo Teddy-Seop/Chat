@@ -14,22 +14,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const RoomModel_1 = __importDefault(require("../Models/RoomModel"));
 const RoomUserListModel_1 = __importDefault(require("../Models/RoomUserListModel"));
-class UserService {
+class RoomService {
     constructor() {
         this.getRoomList = () => __awaiter(this, void 0, void 0, function* () {
             let roomList = yield RoomModel_1.default.findAll();
             return roomList;
         });
+        this.getUserCount = (json) => __awaiter(this, void 0, void 0, function* () {
+            let count = yield RoomUserListModel_1.default.count({
+                where: {
+                    roomNo: json.roomNo
+                }
+            });
+            return count;
+        });
         this.insertUserList = (json) => __awaiter(this, void 0, void 0, function* () {
             yield RoomUserListModel_1.default.create(json);
         });
         this.getUserList = (json) => __awaiter(this, void 0, void 0, function* () {
-            let result = yield RoomUserListModel_1.default.findAll({
-                where: {
-                    roomNo: json.roomNo
-                },
-                raw: true
-            });
+            let result = yield RoomUserListModel_1.default.findAll(json);
             return result;
         });
         this.deleteUserList = (json) => __awaiter(this, void 0, void 0, function* () {
@@ -41,5 +44,5 @@ class UserService {
         });
     }
 }
-exports.default = UserService;
+exports.default = RoomService;
 //# sourceMappingURL=RoomService.js.map

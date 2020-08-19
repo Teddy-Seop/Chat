@@ -1,11 +1,21 @@
 import userModel from '../Models/RoomModel';
 import roomUserListModel from '../Models/RoomUserListModel';
 
-class UserService {
+class RoomService {
     public getRoomList = async () => {
         let roomList = await userModel.findAll();
 
         return roomList;
+    }
+
+    public getUserCount = async (json) => {
+        let count = await roomUserListModel.count({
+            where: {
+                roomNo: json.roomNo
+            }
+        })
+
+        return count;
     }
 
     public insertUserList = async (json) => {
@@ -13,12 +23,7 @@ class UserService {
     }
 
     public getUserList = async (json) => {
-        let result = await roomUserListModel.findAll({
-            where: {
-                roomNo: json.roomNo
-            },
-            raw: true
-        })
+        let result = await roomUserListModel.findAll(json);
 
         return result;
     }
@@ -32,4 +37,4 @@ class UserService {
     }
 }
 
-export default UserService;
+export default RoomService;
