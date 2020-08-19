@@ -72,14 +72,14 @@ crossorigin="anonymous"></script>
 <script>
     //socket io 연결
     const socket = io();
-    var roomNo, userNo, uid;
-    window.onload = () => {
+    let roomNo, userNo, uid;
+    window.onload = async () => {
         //db에 저장된 채팅 출력
-        var chat = `<%- chat %>`;
+        let chat = `<%- chat %>`;
         chat = JSON.parse(chat);
 
-        for(var i=0; i<chat.length; i++){
-            var msg = `<div>${chat[i].uid} : ${chat[i].msg}</div>`
+        for(let i=0; i<chat.length; i++){
+            let msg = `<div>${chat[i].uid} : ${chat[i].msg}</div>`
             $('#txt').append(msg)
         }
 
@@ -91,27 +91,26 @@ crossorigin="anonymous"></script>
         uid = user.uid;
 
         //서버에 입장 메시지 송신
-        var data = {
+        let data = {
             roomNo: roomNo,
             userNo: userNo,
             uid: uid
         }
         socket.emit('joinRoom', data);
 
-        //유저 리스트
-        socket.on('userList', (data) => {
-            document.querySelector('#userList').innerHTML = '';
-            $('#userList').append(`<div><h2>현재 인원 : ${data.length}</h2></div>`);
-            for(var i=0; i<data.length; i++){
-                $('#userList').append(`<div>${data[i].uid}</div>`);
-            }
+        $.ajax({
+            url: '/chat/userList',
+            type: 'POST',
+            dataType: 'json',
+            data: data
         })
+        await userList(data);
     }
 
     //메시지 전송 함수
-    var send = async () => {
-        var msg = $('#message').val();
-        var data = {
+    let send = async () => {
+        let msg = $('#message').val();
+        let data = {
             roomNo: roomNo,
             userNo: userNo,
             uid: uid,
@@ -120,7 +119,7 @@ crossorigin="anonymous"></script>
 
         //서버로 채팅 메시지 송신
         $.ajax({
-            url: '/chat/insertMessage',
+            url: '/chat/message',
             type: 'POST',
             dataType: 'json',
             data: data
@@ -128,25 +127,57 @@ crossorigin="anonymous"></script>
         socket.emit('message', data);
         $('#message').val('');
     }
+    
     //서버에서 채팅 메시지 수신
     socket.on('message', (msg) => {
         $('#txt').append(msg);
     })
 
+    socket.on('userList', async (data) => {
+        await userList(data);
+    })
+
     //채팅방 나가기
-    var leave = () => {
-        var data = {
+    let leave = () => {
+        let data = {
             roomNo: roomNo,
             userNo: userNo,
             uid: uid
         }
-        socket.emit('leaveRoom', data);
-        location.href = '/rooms'
+
+        $.ajax({
+            url: '/chat/userList',
+            type: 'DELETE',
+            dataType: 'json',
+            data: data
+        })
+        .done(() => {
+            socket.emit('leaveRoom', data);
+            location.href = '/rooms'
+        })
+    }
+
+    // 유저 리스트
+    let userList = (data) => {
+        $.ajax({
+            url: '/chat/userList',
+            type: 'GET',
+            dataType: 'json',
+            data: data
+        })
+        .done((result) => {
+            console.log(result)
+            document.querySelector('#userList').innerHTML = '';
+            $('#userList').append(`<div><h2>현재 인원 : ${result.length}</h2></div>`);
+            for(var i=0; i<result.length; i++){
+                $('#userList').append(`<div>${result[i].uid}</div>`);
+            }
+        })
     }
 
     //메뉴 이동
-    var roomMenu = () => {
-        var data = {
+    let roomMenu = () => {
+        let data = {
             roomNo: roomNo,
             userNo: userNo,
             uid: uid
@@ -154,8 +185,8 @@ crossorigin="anonymous"></script>
         socket.emit('leaveRoom', data);
         location.href = '/rooms';
     }
-    var userMenu = () => {
-        var data = {
+    let userMenu = () => {
+        let data = {
             roomNo: roomNo,
             userNo: userNo,
             uid: uid
@@ -163,8 +194,8 @@ crossorigin="anonymous"></script>
         socket.emit('leaveRoom', data);
         location.href = '/users';
     }
-    var friendsMenu = () => {
-        var data = {
+    let friendsMenu = () => {
+        let data = {
             roomNo: roomNo,
             userNo: userNo,
             uid: uid
@@ -172,8 +203,8 @@ crossorigin="anonymous"></script>
         socket.emit('leaveRoom', data);
         location.href = '/friends';
     }
-    var logout = () => {
-        var data = {
+    let logout = () => {
+        let data = {
             roomNo: roomNo,
             userNo: userNo,
             uid: uid

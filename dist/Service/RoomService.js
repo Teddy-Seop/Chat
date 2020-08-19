@@ -13,11 +13,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const RoomModel_1 = __importDefault(require("../Models/RoomModel"));
+const RoomUserListModel_1 = __importDefault(require("../Models/RoomUserListModel"));
 class UserService {
     constructor() {
         this.getRoomList = () => __awaiter(this, void 0, void 0, function* () {
             let roomList = yield RoomModel_1.default.findAll();
             return roomList;
+        });
+        this.insertUserList = (json) => __awaiter(this, void 0, void 0, function* () {
+            yield RoomUserListModel_1.default.create(json);
+        });
+        this.getUserList = (json) => __awaiter(this, void 0, void 0, function* () {
+            let result = yield RoomUserListModel_1.default.findAll({
+                where: {
+                    roomNo: json.roomNo
+                },
+                raw: true
+            });
+            return result;
+        });
+        this.deleteUserList = (json) => __awaiter(this, void 0, void 0, function* () {
+            yield RoomUserListModel_1.default.destroy({
+                where: {
+                    userNo: json.userNo
+                }
+            });
         });
     }
 }

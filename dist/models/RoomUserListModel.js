@@ -30,7 +30,7 @@ RoomUserList.init({
         type: sequelize_1.DataTypes.STRING(45),
         allowNull: false
     }
-}, { sequelize, modelName: 'roomUserList', tableName: 'roomUserList', timestamps: true });
+}, { sequelize, modelName: 'roomUserList', tableName: 'room_userList', timestamps: true });
 RoomUserList.belongsTo(UserModel_1.default);
 RoomUserList.belongsTo(RoomModel_1.default);
 exports.default = RoomUserList;

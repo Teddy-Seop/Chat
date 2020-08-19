@@ -32,6 +32,7 @@ io.on('connection', (socket) => {
         // 입장 메시지 전송
         let message = `<div>${data.uid}님이 입장하였습니다.</div>`;
         io.to(data.roomNo).emit('message', message);
+        io.to(data.roomNo).emit('userList', data);
     });
     // 메시지 송수신
     socket.on('message', (data) => {
@@ -42,6 +43,7 @@ io.on('connection', (socket) => {
     socket.on('leaveRoom', (data) => {
         let message = `<div>${data.uid}님이 퇴장하였습니다.`;
         io.to(data.roomNo).emit('message', message);
+        io.to(data.roomNo).emit('userList', data);
     });
 });
 app.listen(server);

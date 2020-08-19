@@ -16,6 +16,7 @@ const ChatModel_1 = __importDefault(require("../Models/ChatModel"));
 class ChatService {
     constructor() {
         this.getChatList = (roomNo) => __awaiter(this, void 0, void 0, function* () {
+            console.log(roomNo);
             let result = yield ChatModel_1.default.findAll({
                 where: {
                     roomNo: roomNo

@@ -31,10 +31,11 @@ io.on('connection', (socket) => {
     // 채팅방 입장
     socket.on('joinRoom', (data) => {
         socket.join(data.roomNo);
-
+        
         // 입장 메시지 전송
         let message = `<div>${data.uid}님이 입장하였습니다.</div>`;
         io.to(data.roomNo).emit('message', message);
+        io.to(data.roomNo).emit('userList', data);
     })
 
     // 메시지 송수신
@@ -47,6 +48,7 @@ io.on('connection', (socket) => {
     socket.on('leaveRoom', (data) => {
         let message = `<div>${data.uid}님이 퇴장하였습니다.`;
         io.to(data.roomNo).emit('message', message)
+        io.to(data.roomNo).emit('userList', data);
     })
 })
 

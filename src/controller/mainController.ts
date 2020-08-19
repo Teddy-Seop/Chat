@@ -18,7 +18,7 @@ class MainConroller {
         this.router.get('/signup', this.renderSignup);
         this.router.get('/rooms', this.renderRooms);
         this.router.get('/roomList', this.getRoomList);
-        this.router.get('/chat/:no', this.renderChat)
+        this.router.get('/room/:no', this.renderChat)
     }
 
     // login page rendering
