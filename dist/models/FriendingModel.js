@@ -16,22 +16,21 @@ const sequelize = new sequelize_1.Sequelize(config.database, config.username, co
     host: config.host,
     dialect: 'mysql'
 });
-class Friends extends sequelize_1.Model {
+class Friending extends sequelize_1.Model {
 }
-Friends.init({
+Friending.init({
     no: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
-    check: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0
+    uid: {
+        type: sequelize_1.DataTypes.STRING(45),
+        allowNull: false
     }
-}, { sequelize, modelName: 'friends', tableName: 'friends' });
-Friends.belongsTo(UserModel_1.default, { as: 'user' });
-Friends.belongsTo(UserModel_1.default, { as: 'friends' });
-exports.default = Friends;
-//# sourceMappingURL=FriendsModel.js.map
+}, { sequelize, modelName: 'friending', tableName: 'friending' });
+Friending.belongsTo(UserModel_1.default, { as: 'user' });
+Friending.belongsTo(UserModel_1.default, { as: 'friends' });
+exports.default = DmRoom;
+//# sourceMappingURL=FriendingModel.js.map

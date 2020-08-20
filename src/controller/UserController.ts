@@ -1,5 +1,6 @@
 import express from 'express';
 import UserService from '../Service/UserService';
+import User from '../Models/UserModel';
 
 class UserController {
     public router = express.Router();
@@ -14,12 +15,13 @@ class UserController {
         this.router.post('/login', this.login);
         this.router.post('/signup', this.signup);
         this.router.get('/friendsCount', this.getFrinedsCount);
+        this.router.post('/friends', this.friending);
     }
 
     login = async (req: express.Request, res: express.Response) => {
     
         let json = req.body;
-        let userInfo = await this.userService.getUserInfo(json.id);
+        let userInfo: User = await this.userService.getUserInfo(json.id);
 
         if(userInfo.get('id') === json.id && userInfo.get('pw') === json.pw) {
             req.session.user = userInfo;
@@ -40,14 +42,13 @@ class UserController {
 
     getFrinedsCount = async (req: express.Request, res: express.Response) => {
     
-        let frinedsList = await this.userService.getFriendsList(req.query);
+        let frinedsList: User[] = await this.userService.getFriendsList(req.query);
         let count: number = frinedsList.length;
 
         res.json({ count: count });
     }
 
     friending = async (req: express.Request, res: express.Response) => {
-    
         await this.userService.friending(req.body);
 
         res.json({ result: 'OK' });

@@ -1,9 +1,7 @@
-import { Service, Inject } from 'typedi';
-import "reflect-metadata";
+import { Op } from "sequelize";
 import userModel from '../Models/UserModel';
 import friendsModel from '../Models/FriendsModel';
 
-@Service()
 class UserService {
     public getUserInfo = async (id: string) => {
         let userInfo = await userModel.findOne({
@@ -19,10 +17,19 @@ class UserService {
         await userModel.create(json);
     }
 
-    public getUserList = async () => {
-        let userList = await userModel.findAll({ raw: true });
-
-        return userList;
+    public getUserList = async (json) => {
+        try {
+            let userList = await userModel.findAll({
+                where: {
+                    no: { [Op.ne]: json.no }
+                },
+                raw: true
+            });
+    
+            return userList;
+        } catch(e) {
+            return e;
+        }
     }
 
     public getFriendsList = async (json) => {
@@ -37,7 +44,7 @@ class UserService {
     }
 
     public friending = async (json) => {
-        // await = 
+        await friendsModel.create(json);
     }
 }
 

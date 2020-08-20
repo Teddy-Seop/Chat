@@ -48,7 +48,11 @@
 integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
 crossorigin="anonymous"></script>
 <script>
+    let user;
     window.onload = async () => {
+        user = `<%- user %>`;
+        user = JSON.parse(user);
+        
         //유저 목록 출력
         let users = `<%- users %>`;
         users = JSON.parse(users);
@@ -57,7 +61,7 @@ crossorigin="anonymous"></script>
         friends = JSON.parse(friends);
         let arr = new Array();
         for(let i=0; i<friends.length; i++){
-            arr.push(friends[i].fno);
+            arr.push(friends[i].friendsNo);
         }
 
         for(let i=0; i<users.length; i++){
@@ -75,18 +79,18 @@ crossorigin="anonymous"></script>
     }
 
     //친구 추가
-    let friending = (no) => {
+    let friending = (friendsNo) => {
         let data = {
-            uno: `<%- user.no %>`,
-            uid: `<%- user.id %>`,
-            fno: no
+            userNo: user.no,
+            friendsNo: friendsNo
         }
         $.ajax({
-            url: '/user/friending',
+            url: '/user/friends ',
             dataType: 'json',
             type: 'POST',
             data: data,
             success: (result) => {
+                location.href = location.href;
                 console.log(result);
             }
         })
@@ -103,7 +107,7 @@ crossorigin="anonymous"></script>
         .done((result) => {
             count = result.count;
         })
-        console.log(count);
+
         return count;
     }
 

@@ -53,7 +53,7 @@ class MainConroller {
             res.render('chat', json);
         });
         this.renderUsers = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            let users = yield this.userService.getUserList();
+            let users = yield this.userService.getUserList(req.session.user);
             let frineds = yield this.userService.getFriendsList(req.session.user);
             res.render('users', {
                 user: JSON.stringify(req.session.user),

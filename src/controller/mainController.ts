@@ -2,6 +2,10 @@ import express from 'express';
 import RoomService from '../Service/RoomService';
 import ChatService from '../Service/ChatService';
 import UserService from '../Service/UserService';
+import User from '../Models/UserModel';
+import Chat from '../Models/ChatModel';
+import Friends from '../Models/FriendsModel'
+import Room from '../Models/RoomModel';
 
 class MainConroller {
     public router = express.Router();
@@ -44,22 +48,22 @@ class MainConroller {
 
     // get room list
     getRoomList = async (req: express.Request, res: express.Response) => {
-        let roomList = await this.roomService.getRoomList();
+        let roomList: Room[] = await this.roomService.getRoomList();
         
         res.json(roomList);
     }
 
     // get user count
     getUserCount = async (req: express.Request, res: express.Response) => {
-        let count = await this.roomService.getUserCount(req.query);
+        let count: number = await this.roomService.getUserCount(req.query);
         
         res.json({ count: count });
     }
 
     // join chatting room
     renderChat = async (req: express.Request, res: express.Response) => {
-        let roomNo = req.params.no;
-        let chat = await this.chatService.getChatList(roomNo);
+        let roomNo: number = req.params.no;
+        let chat: Chat[] = await this.chatService.getChatList(roomNo);
         
         let json = {
             roomNo: req.params.no,
@@ -71,8 +75,8 @@ class MainConroller {
     }
 
     renderUsers = async (req: express.Request, res: express.Response) => {
-        let users = await this.userService.getUserList();
-        let frineds = await this.userService.getFriendsList(req.session.user);
+        let users: User[] = await this.userService.getUserList(req.session.user);
+        let frineds: Friends[] = await this.userService.getFriendsList(req.session.user);
 
         res.render('users', {
             user: JSON.stringify(req.session.user),

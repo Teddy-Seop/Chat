@@ -49,6 +49,7 @@ class UserController {
         this.router.post('/login', this.login);
         this.router.post('/signup', this.signup);
         this.router.get('/friendsCount', this.getFrinedsCount);
+        this.router.post('/friends', this.friending);
     }
 }
 exports.default = UserController;
