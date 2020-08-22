@@ -32,5 +32,5 @@ Friending.init({
 }, { sequelize, modelName: 'friending', tableName: 'friending' });
 Friending.belongsTo(UserModel_1.default, { as: 'user' });
 Friending.belongsTo(UserModel_1.default, { as: 'friends' });
-exports.default = DmRoom;
+exports.default = Friending;
 //# sourceMappingURL=FriendingModel.js.map

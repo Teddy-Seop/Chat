@@ -32,4 +32,4 @@ Friending.init({
 Friending.belongsTo(UserModel, { as: 'user' });
 Friending.belongsTo(UserModel, { as: 'friends' });
 
-export default DmRoom;
+export default Friending;

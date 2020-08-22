@@ -1,4 +1,5 @@
 import express from 'express';
+import passport from 'passport';
 import UserService from '../Service/UserService';
 import User from '../Models/UserModel';
 
@@ -12,9 +13,13 @@ class UserController {
     }
 
     private initRouters() {
-        this.router.post('/login', this.login);
+        // this.router.post('/login', this.login);
+        this.router.post('/login', passport.authenticate('local', {
+            successRedirect: '/rooms',
+            failureRedirect: '/'
+        })),
         this.router.post('/signup', this.signup);
-        this.router.get('/friendsCount', this.getFrinedsCount);
+        this.router.get('/friendsList', this.getFrinedsList);
         this.router.post('/friends', this.friending);
     }
 
@@ -24,7 +29,7 @@ class UserController {
         let userInfo: User = await this.userService.getUserInfo(json.id);
 
         if(userInfo.get('id') === json.id && userInfo.get('pw') === json.pw) {
-            req.session.user = userInfo;
+            req.user = userInfo;
 
             res.redirect('/rooms');
         } else {
@@ -40,12 +45,15 @@ class UserController {
         res.redirect('/');
     }
 
-    getFrinedsCount = async (req: express.Request, res: express.Response) => {
-    
-        let frinedsList: User[] = await this.userService.getFriendsList(req.query);
-        let count: number = frinedsList.length;
+    getFrinedsList = async (req: express.Request, res: express.Response) => {
+        let json = {
+            no: req.query.no,
+            check: 1
+        }
+        console.log(json)
+        let frinedsList: User[] = await this.userService.getFriendsList(json);
 
-        res.json({ count: count });
+        res.json(frinedsList);
     }
 
     friending = async (req: express.Request, res: express.Response) => {
@@ -53,7 +61,6 @@ class UserController {
 
         res.json({ result: 'OK' });
     }
-
 }
 
 export default UserController;

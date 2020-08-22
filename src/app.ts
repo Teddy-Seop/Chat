@@ -1,10 +1,13 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import session from 'express-session';
+import passport from 'passport';
+import Passport from './config/passport';
 import path from 'path';
 
 class App {
     public app: express.Applicaition = new express();
+    public passportConfig: Passport = new Passport();
 
     constructor(controllers, public port: number) {
         this.initMiddlewares();
@@ -20,13 +23,16 @@ class App {
     private initMiddlewares() {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended : false }));
-        this.app.set('views', path.join(__dirname, '../views'));
-        this.app.set('view engine', 'ejs');
         this.app.use(session({
             secret:`@#@$MYSIGN#@$#$`,
             resave: false,
             saveUninitialized: true 
         }))
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
+        this.passportConfig.config();
+        this.app.set('views', path.join(__dirname, '../views'));
+        this.app.set('view engine', 'ejs');
     }
 
     public listen(server) {

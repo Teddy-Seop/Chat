@@ -68,40 +68,50 @@ integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
 crossorigin="anonymous"></script>
 <script>
     window.onload = () => {
-        friendingList();
+        // friendingList();
+        list()
     }
 
     //수신함 조회
-    var receive = () => {
-        document.querySelector('#list').innerHTML = "";
-        friendingList();
+    let receive = async () => {
+
+        // await friendingList();
     }
 
     //목록 조회
-    var list = () => {
+    let list = async () => {
+        let friending = `<%- friending %>`;
+        friending = JSON.parse(friending);
         document.querySelector('#list').innerHTML = "";
-        friendsList();
+        for(let i=0; i<friending.length; i++){
+            let html = `<div class="users ${friending[i].no}">ID: ${friending[i].id}  가입날짜: ${formatDate(friending[i].createdAt)}`;
+            html += `<div id="btn"><button class="accept" onclick="accept(${friending[i].no})">수락</button>`;
+            html += `<button class="reject" onclick="reject(${friending[i].no})">거절</button></div>`;
+            html += `</div>`;
+            $('#list').append(html);
+        }
+        // await friendsList();
     }
 
     // 친구 신청한 유저 리스트 조회
-    var friendingList = () => {
-        var friending = `<%- friending %>`;
+    let friendingList = async () => {
+        let friending = `<%- friending %>`;
         friending = JSON.parse(friending);
 
-        var data = new Array();
-        for(var i=0; i<friending.length; i++){
-            data.push(friending[i].uno)
+        let data = new Array();
+        for(let i=0; i<friending.length; i++){
+            data.push(friending[i].userNo)
         }
         $.ajax({
-            url: '/user/userList',
+            url: '/user/friendingList',
             dataType: 'json',
             type: 'GET',
             data: {data : data},
             success: (result) => {
                 console.log(result);
                 document.querySelector('#list').innerHTML = "";
-                for(var i=0; i<result.length; i++){
-                    var html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
+                for(let i=0; i<result.length; i++){
+                    let html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
                     html += `<div id="btn"><button class="accept" onclick="accept(${result[i].no})">수락</button>`;
                     html += `<button class="reject" onclick="reject(${result[i].no})">거절</button></div>`;
                     html += `</div>`;
@@ -112,12 +122,12 @@ crossorigin="anonymous"></script>
     }
 
     //친구 목록 조회
-    var friendsList = () => {
-        var friends = `<%- friends %>`;
+    let friendsList = async () => {
+        let friends = `<%- friends %>`;
         friends = JSON.parse(friends);
 
-        var data = new Array();
-        for(var i=0; i<friends.length; i++){
+        let data = new Array();
+        for(let i=0; i<friends.length; i++){
             data.push(friends[i].fno)
         }
         $.ajax({
@@ -128,8 +138,8 @@ crossorigin="anonymous"></script>
             success: (result) => {
                 console.log(result);
                 document.querySelector('#list').innerHTML = "";
-                for(var i=0; i<result.length; i++){
-                    var html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
+                for(let i=0; i<result.length; i++){
+                    let html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
                     html += `<div id="btn"><button class="accept" onclick="del(${result[i].no})">친구삭제</button>`;
                     html += `<button class="reject" onclick="dm(${result[i].no})">DM</button></div>`;
                     html += `</div>`;
@@ -140,11 +150,11 @@ crossorigin="anonymous"></script>
     }
 
     //친구 신청 수락
-    var accept = (fno) => {
-        var uno = parseInt(`<%= uno %>`);
-        var data = {
-            uno: uno,
-            fno: fno
+    let accept = (friendsNo) => {
+        let user = parseInt(`<%- user %>`);
+        let data = {
+            userNo: user.no,
+            friendsNo: friendsNo
         }
         $.ajax({
             url: `/user/friending/accept`,
@@ -158,11 +168,11 @@ crossorigin="anonymous"></script>
     }
 
     //친구 신청 거절
-    var reject = (fno) => {
-        var uno = parseInt(`<%= uno %>`);
-        var data = {
-            uno: uno,
-            fno: fno
+    let reject = (friendsNo) => {
+        let user = parseInt(`<%- user %>`);
+        let data = {
+            userNo: user.no,
+            friendsNo: friendsNo
         }
         $.ajax({
             url: `/user/friending/reject`,
@@ -176,16 +186,17 @@ crossorigin="anonymous"></script>
     }
 
     //친구 삭제
-    var del = (fno) => {
-        var uno = parseInt(`<%= uno %>`);
+    let del = (friendsNo) => {
+        let user = parseInt(`<%- user %>`);
+        let data = {
+            userNo: user.no,
+            friendsNo: friendsNo
+        }
         $.ajax({
             url: '/user/friends/delete',
             dataType: 'json',
             type: 'POST',
-            data: {
-                uno: uno,
-                fno: fno
-            },
+            data: data,
             success: (result) => {
                 location.href = location.href;
             }
@@ -193,17 +204,18 @@ crossorigin="anonymous"></script>
     }
 
     //DM
-    var dm = (fno) => {
-        var uno = parseInt(`<%= uno %>`);
-        location.href = `/dm/${uno}/${fno}`;
+    let dm = (friendsNo) => {
+        let user = parseInt(`<%- user %>`);
+        let userNo = user.userNo;
+        location.href = `/dm/${uno}/${friendsNo}`;
     }
 
     //날자 형식 변환
-    var formatDate = (date) => {
-        var d = new Date(date);
-        var year = d.getFullYear();
-        var month = '' + (d.getMonth() + 1);
-        var day = '' + d.getDate();
+    let formatDate = (date) => {
+        let d = new Date(date);
+        let year = d.getFullYear();
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
 
         if (month.length < 2) month = '0' + month;
         if (day.length < 2) day = '0' + day;
@@ -212,16 +224,16 @@ crossorigin="anonymous"></script>
     }
 
     //메뉴 이동
-    var roomMenu = () => {
+    let roomMenu = () => {
         location.href = '/rooms';
     }
-    var userMenu = () => {
+    let userMenu = () => {
         location.href = '/users';
     }
-    var friendsMenu = () => {
+    let friendsMenu = () => {
         location.href = '/friends';
     }
-    var logout = () => {
+    let logout = () => {
         location.href = '/user/logout';
     }
 </script>

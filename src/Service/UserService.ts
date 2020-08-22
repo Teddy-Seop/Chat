@@ -35,7 +35,8 @@ class UserService {
     public getFriendsList = async (json) => {
         let friendsList = await friendsModel.findAll({
             where: {
-                userNo: json.no
+                userNo: json.no,
+                check: json.check
             },
             raw: true
         });

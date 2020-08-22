@@ -99,13 +99,13 @@ crossorigin="anonymous"></script>
     let friendsCount = async (no) => {
         let count;
         await $.ajax({
-            url: '/user/friendsCount',
+            url: '/user/friendsList',
             dataType: 'json',
             type: 'GET',
             data: { no: no }
         })
         .done((result) => {
-            count = result.count;
+            count = result.length;
         })
 
         return count;

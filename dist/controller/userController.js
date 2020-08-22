@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const passport_1 = __importDefault(require("passport"));
 const UserService_1 = __importDefault(require("../Service/UserService"));
 class UserController {
     constructor() {
@@ -21,7 +22,7 @@ class UserController {
             let json = req.body;
             let userInfo = yield this.userService.getUserInfo(json.id);
             if (userInfo.get('id') === json.id && userInfo.get('pw') === json.pw) {
-                req.session.user = userInfo;
+                req.user = userInfo;
                 res.redirect('/rooms');
             }
             else {
@@ -33,10 +34,14 @@ class UserController {
             yield this.userService.createUser(json);
             res.redirect('/');
         });
-        this.getFrinedsCount = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            let frinedsList = yield this.userService.getFriendsList(req.query);
-            let count = frinedsList.length;
-            res.json({ count: count });
+        this.getFrinedsList = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            let json = {
+                no: req.query.no,
+                check: 1
+            };
+            console.log(json);
+            let frinedsList = yield this.userService.getFriendsList(json);
+            res.json(frinedsList);
         });
         this.friending = (req, res) => __awaiter(this, void 0, void 0, function* () {
             yield this.userService.friending(req.body);
@@ -46,9 +51,13 @@ class UserController {
         this.initRouters();
     }
     initRouters() {
-        this.router.post('/login', this.login);
-        this.router.post('/signup', this.signup);
-        this.router.get('/friendsCount', this.getFrinedsCount);
+        // this.router.post('/login', this.login);
+        this.router.post('/login', passport_1.default.authenticate('local', {
+            successRedirect: '/rooms',
+            failureRedirect: '/'
+        })),
+            this.router.post('/signup', this.signup);
+        this.router.get('/friendsList', this.getFrinedsList);
         this.router.post('/friends', this.friending);
     }
 }

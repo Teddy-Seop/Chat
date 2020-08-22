@@ -45,7 +45,8 @@ class UserService {
         this.getFriendsList = (json) => __awaiter(this, void 0, void 0, function* () {
             let friendsList = yield FriendsModel_1.default.findAll({
                 where: {
-                    userNo: json.no
+                    userNo: json.no,
+                    check: json.check
                 },
                 raw: true
             });
