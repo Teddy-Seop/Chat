@@ -17,10 +17,10 @@ const UserModel_1 = __importDefault(require("../Models/UserModel"));
 const FriendsModel_1 = __importDefault(require("../Models/FriendsModel"));
 class UserService {
     constructor() {
-        this.getUserInfo = (id) => __awaiter(this, void 0, void 0, function* () {
+        this.getUserInfo = (json) => __awaiter(this, void 0, void 0, function* () {
             let userInfo = yield UserModel_1.default.findOne({
                 where: {
-                    id: id
+                    no: json.no
                 }
             });
             return userInfo;
@@ -54,6 +54,29 @@ class UserService {
         });
         this.friending = (json) => __awaiter(this, void 0, void 0, function* () {
             yield FriendsModel_1.default.create(json);
+        });
+        this.accpet = (json) => __awaiter(this, void 0, void 0, function* () {
+            yield FriendsModel_1.default.update({
+                check: 1
+            }, {
+                where: {
+                    userNo: json.userNo,
+                    friendsNo: json.friendsNo
+                }
+            });
+            yield FriendsModel_1.default.create({
+                userNo: json.friendsNo,
+                friendsNo: json.userNo,
+                check: 1
+            });
+        });
+        this.reject = (json) => __awaiter(this, void 0, void 0, function* () {
+            yield FriendsModel_1.default.destroy({
+                where: {
+                    userNo: json.userNo,
+                    friendsNo: json.friendsNo
+                }
+            });
         });
     }
 }

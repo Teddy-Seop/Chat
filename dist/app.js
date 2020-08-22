@@ -35,6 +35,7 @@ class App {
         this.passportConfig.config();
         this.app.set('views', path_1.default.join(__dirname, '../views'));
         this.app.set('view engine', 'ejs');
+        this.app.use(express_1.default.static(path_1.default.join(__dirname, '../public')));
     }
     listen(server) {
         server.listen(this.port, () => {

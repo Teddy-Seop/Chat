@@ -55,8 +55,8 @@
     </div>
     <div id="contents">
         <div id="menu">
-            <div id="receiveMenu" onclick="receive()">수신함</div>
-            <div id="listMenu" onclick="list()">목록</div>
+            <div id="receiveMenu" onclick="friendingList()">친구 요청 수신함</div>
+            <div id="listMenu" onclick="list()">친구 목록</div>
         </div>
         <div id="list"></div>
     </div>
@@ -66,123 +66,59 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js" 
 integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
 crossorigin="anonymous"></script>
+<script src="/js/frontUtil.js"></script>
 <script>
-    window.onload = () => {
-        // friendingList();
-        list()
+    window.onload = async () => {
+        await friendingList();
     }
 
-    //수신함 조회
-    let receive = async () => {
-
-        // await friendingList();
-    }
-
-    //목록 조회
-    let list = async () => {
+    // 친구 요청 목록 조회
+    let friendingList = async () => {
         let friending = `<%- friending %>`;
         friending = JSON.parse(friending);
         document.querySelector('#list').innerHTML = "";
         for(let i=0; i<friending.length; i++){
-            let html = `<div class="users ${friending[i].no}">ID: ${friending[i].id}  가입날짜: ${formatDate(friending[i].createdAt)}`;
-            html += `<div id="btn"><button class="accept" onclick="accept(${friending[i].no})">수락</button>`;
-            html += `<button class="reject" onclick="reject(${friending[i].no})">거절</button></div>`;
+            let userInfo = await AjaxUtil('/user/user', 'GET', {no: friending[i].userNo});
+            let html = `<div class="users ${friending[i].friendsNo}">ID: ${userInfo.id}  가입날짜: ${formatDate(userInfo.createdAt)}`;
+            html += `<div id="btn"><button class="accept" onclick="accept(${friending[i].friendsNo})">수락</button>`;
+            html += `<button class="reject" onclick="reject(${friending[i].friendsNo})">거절</button></div>`;
             html += `</div>`;
             $('#list').append(html);
         }
-        // await friendsList();
     }
 
-    // 친구 신청한 유저 리스트 조회
-    let friendingList = async () => {
-        let friending = `<%- friending %>`;
-        friending = JSON.parse(friending);
-
-        let data = new Array();
-        for(let i=0; i<friending.length; i++){
-            data.push(friending[i].userNo)
-        }
-        $.ajax({
-            url: '/user/friendingList',
-            dataType: 'json',
-            type: 'GET',
-            data: {data : data},
-            success: (result) => {
-                console.log(result);
-                document.querySelector('#list').innerHTML = "";
-                for(let i=0; i<result.length; i++){
-                    let html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
-                    html += `<div id="btn"><button class="accept" onclick="accept(${result[i].no})">수락</button>`;
-                    html += `<button class="reject" onclick="reject(${result[i].no})">거절</button></div>`;
-                    html += `</div>`;
-                    $('#list').append(html);
-                }
-            }
-        })
-    }
-
-    //친구 목록 조회
-    let friendsList = async () => {
+    // 친구 목록 조회
+    let list = async () => {
         let friends = `<%- friends %>`;
         friends = JSON.parse(friends);
-
-        let data = new Array();
+        document.querySelector('#list').innerHTML = "";
         for(let i=0; i<friends.length; i++){
-            data.push(friends[i].fno)
+            let userInfo = await AjaxUtil('/user/user', 'GET', {no: friends[i].userNo});
+            let html = `<div class="users ${friends[i].no}">ID: ${userInfo.id}  가입날짜: ${formatDate(userInfo.createdAt)}</div>`;
+            $('#list').append(html);
         }
-        $.ajax({
-            url: '/user/userList',
-            dataType: 'json',
-            type: 'GET',
-            data: {data : data},
-            success: (result) => {
-                console.log(result);
-                document.querySelector('#list').innerHTML = "";
-                for(let i=0; i<result.length; i++){
-                    let html = `<div class="users ${result[i].no}">ID: ${result[i].id}  가입날짜: ${formatDate(result[i].signup_date)}`;
-                    html += `<div id="btn"><button class="accept" onclick="del(${result[i].no})">친구삭제</button>`;
-                    html += `<button class="reject" onclick="dm(${result[i].no})">DM</button></div>`;
-                    html += `</div>`;
-                    $('#list').append(html);
-                }
-            }
-        })
     }
 
     //친구 신청 수락
-    let accept = (friendsNo) => {
-        let user = parseInt(`<%- user %>`);
+    let accept = async (friendsNo) => {
+        let user = JSON.parse(`<%- user %>`);
         let data = {
             userNo: user.no,
             friendsNo: friendsNo
         }
-        $.ajax({
-            url: `/user/friending/accept`,
-            dataType: 'json',
-            type: 'POST',
-            data: data,
-            success: (result) => {
-                location.href = location.href;
-            }
-        })
+        await AjaxUtil('/user/friends/accept', 'POST', data);
+        location.href = location.href;
     }
 
     //친구 신청 거절
-    let reject = (friendsNo) => {
-        let user = parseInt(`<%- user %>`);
+    let reject = async (friendsNo) => {
+        let user = JSON.parse(`<%- user %>`);
         let data = {
             userNo: user.no,
             friendsNo: friendsNo
         }
-        $.ajax({
-            url: `/user/friending/reject`,
-            dataType: 'json',
-            type: 'POST',
-            data: data,
-            success: (result) => {
-                location.href = location.href;
-            }
-        })
+        await AjaxUtil('/user/friends/reject', 'DELETE', data);
+        location.href = location.href;
     }
 
     //친구 삭제

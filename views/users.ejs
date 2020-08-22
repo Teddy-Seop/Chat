@@ -47,6 +47,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js" 
 integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
 crossorigin="anonymous"></script>
+<script src="/js/frontUtil.js"></script>
 <script>
     let user;
     window.onload = async () => {
@@ -84,8 +85,9 @@ crossorigin="anonymous"></script>
             userNo: user.no,
             friendsNo: friendsNo
         }
+        
         $.ajax({
-            url: '/user/friends ',
+            url: '/user/friends',
             dataType: 'json',
             type: 'POST',
             data: data,
@@ -97,16 +99,8 @@ crossorigin="anonymous"></script>
     }
 
     let friendsCount = async (no) => {
-        let count;
-        await $.ajax({
-            url: '/user/friendsList',
-            dataType: 'json',
-            type: 'GET',
-            data: { no: no }
-        })
-        .done((result) => {
-            count = result.length;
-        })
+        let count = await AjaxUtil('/user/friendsList', 'GET', { no: no });
+        count = count.length;
 
         return count;
     }
