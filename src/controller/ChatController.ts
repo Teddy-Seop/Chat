@@ -1,6 +1,9 @@
 import express from 'express';
 import ChatService from '../Service/ChatService';
 import RoomService from '../Service/RoomService';
+import Chat from '../Models/ChatModel';
+import Room from '../Models/RoomModel';
+import RoomUserList from '../Models/RoomUserListModel';
 
 class ChatController {
     public router = express.Router();
@@ -30,7 +33,7 @@ class ChatController {
                 roomNo: req.query.roomNo
             }
         }
-        let userList = await this.roomService.getUserList(json);
+        let userList: RoomUserList[] = await this.roomService.getUserList(json);
 
         res.json(userList);
     }

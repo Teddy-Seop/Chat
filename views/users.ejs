@@ -47,8 +47,13 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js" 
 integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" 
 crossorigin="anonymous"></script>
+<script src="/js/frontUtil.js"></script>
 <script>
+    let user;
     window.onload = async () => {
+        user = `<%- user %>`;
+        user = JSON.parse(user);
+        
         //유저 목록 출력
         let users = `<%- users %>`;
         users = JSON.parse(users);
@@ -57,7 +62,7 @@ crossorigin="anonymous"></script>
         friends = JSON.parse(friends);
         let arr = new Array();
         for(let i=0; i<friends.length; i++){
-            arr.push(friends[i].fno);
+            arr.push(friends[i].friendsNo);
         }
 
         for(let i=0; i<users.length; i++){
@@ -75,35 +80,28 @@ crossorigin="anonymous"></script>
     }
 
     //친구 추가
-    let friending = (no) => {
+    let friending = (friendsNo) => {
         let data = {
-            uno: `<%- user.no %>`,
-            uid: `<%- user.id %>`,
-            fno: no
+            userNo: user.no,
+            friendsNo: friendsNo
         }
+        
         $.ajax({
-            url: '/user/friending',
+            url: '/user/friends',
             dataType: 'json',
             type: 'POST',
             data: data,
             success: (result) => {
+                location.href = location.href;
                 console.log(result);
             }
         })
     }
 
     let friendsCount = async (no) => {
-        let count;
-        await $.ajax({
-            url: '/user/friendsCount',
-            dataType: 'json',
-            type: 'GET',
-            data: { no: no }
-        })
-        .done((result) => {
-            count = result.count;
-        })
-        console.log(count);
+        let count = await AjaxUtil('/user/friendsList', 'GET', { no: no });
+        count = count.length;
+
         return count;
     }
 

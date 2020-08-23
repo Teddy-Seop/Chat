@@ -16,9 +16,11 @@ const express_1 = __importDefault(require("express"));
 const RoomService_1 = __importDefault(require("../Service/RoomService"));
 const ChatService_1 = __importDefault(require("../Service/ChatService"));
 const UserService_1 = __importDefault(require("../Service/UserService"));
+const passport_1 = __importDefault(require("../config/passport"));
 class MainConroller {
     constructor() {
         this.router = express_1.default.Router();
+        this.passport = new passport_1.default();
         // login page rendering
         this.renderLogin = (req, res) => __awaiter(this, void 0, void 0, function* () {
             res.render('login');
@@ -48,21 +50,36 @@ class MainConroller {
             let json = {
                 roomNo: req.params.no,
                 chat: JSON.stringify(chat),
-                user: JSON.stringify(req.session.user)
+                user: JSON.stringify(req.user)
             };
             res.render('chat', json);
         });
         this.renderUsers = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            let users = yield this.userService.getUserList();
-            let frineds = yield this.userService.getFriendsList(req.session.user);
+            let users = yield this.userService.getUserList(req.user);
+            let json = {
+                no: req.user.no,
+                check: 1
+            };
+            let friends = yield this.userService.getFriendsList(json);
             res.render('users', {
-                user: JSON.stringify(req.session.user),
+                user: JSON.stringify(req.user),
                 users: JSON.stringify(users),
-                friends: JSON.stringify(frineds),
+                friends: JSON.stringify(friends),
             });
         });
         this.renderFriends = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            res.render('friends');
+            let json = {
+                no: req.user.no,
+                check: 0
+            };
+            let friending = yield this.userService.getFriendsList(json);
+            json.check = 1;
+            let friends = yield this.userService.getFriendsList(json);
+            res.render('friends', {
+                user: JSON.stringify(req.user),
+                friends: JSON.stringify(friends),
+                friending: JSON.stringify(friending),
+            });
         });
         this.roomService = new RoomService_1.default();
         this.chatService = new ChatService_1.default();
@@ -72,12 +89,12 @@ class MainConroller {
     initRouters() {
         this.router.get('/', this.renderLogin);
         this.router.get('/signup', this.renderSignup);
-        this.router.get('/rooms', this.renderRooms);
+        this.router.get('/rooms', this.passport.isAuthenticated, this.renderRooms);
         this.router.get('/roomList', this.getRoomList);
         this.router.get('/userCount', this.getUserCount);
-        this.router.get('/room/:no', this.renderChat);
-        this.router.get('/users', this.renderUsers);
-        this.router.get('/friends', this.renderFriends);
+        this.router.get('/room/:no', this.passport.isAuthenticated, this.renderChat);
+        this.router.get('/users', this.passport.isAuthenticated, this.renderUsers);
+        this.router.get('/friends', this.passport.isAuthenticated, this.renderFriends);
     }
 }
 exports.default = MainConroller;

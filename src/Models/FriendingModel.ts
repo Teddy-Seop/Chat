@@ -14,23 +14,22 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
     dialect: 'mysql'
 });
 
-class Friends extends Model {}
+class Friending extends Model {}
 
-Friends.init({
+Friending.init({
     no: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    check: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
+    uid: {
+        type: DataTypes.STRING(45),
+        allowNull: false
     }
-}, {sequelize, modelName: 'friends', tableName: 'friends'});
+}, {sequelize, modelName: 'friending', tableName: 'friending'});
 
-Friends.belongsTo(UserModel, { as: 'user' });
-Friends.belongsTo(UserModel, { as: 'friends' });
+Friending.belongsTo(UserModel, { as: 'user' });
+Friending.belongsTo(UserModel, { as: 'friends' });
 
-export default Friends;
+export default Friending;
